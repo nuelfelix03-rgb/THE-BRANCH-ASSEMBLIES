@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Reports - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-file-earmark-bar-graph"></i> Reports</h4>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-people fs-1 text-primary"></i>
+                <h5 class="mt-3">Member Reports</h5>
+                <p class="text-muted">View member statistics, growth trends, and demographics.</p>
+                <a href="{{ url_for('reports.members_report') }}" class="btn btn-primary">
+                    <i class="bi bi-eye"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-calendar-check fs-1 text-success"></i>
+                <h5 class="mt-3">Attendance Reports</h5>
+                <p class="text-muted">Analyze attendance patterns, service trends, and percentages.</p>
+                <a href="{{ url_for('reports.attendance_report') }}" class="btn btn-success">
+                    <i class="bi bi-eye"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-download"></i> Export Data</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center p-3 border rounded">
+                            <i class="bi bi-people fs-3 me-3 text-primary"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">Export Members</h6>
+                                <small class="text-muted">Download all member records</small>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('reports.export_members_csv') }}" class="btn btn-outline-primary">CSV</a>
+                                <a href="{{ url_for('reports.export_members_excel') }}" class="btn btn-outline-success">Excel</a>
+                                <a href="{{ url_for('reports.export_members_pdf') }}" class="btn btn-outline-danger">PDF</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center p-3 border rounded">
+                            <i class="bi bi-calendar-check fs-3 me-3 text-success"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">Export Attendance</h6>
+                                <small class="text-muted">Download all attendance records</small>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('reports.export_attendance_csv') }}" class="btn btn-outline-primary">CSV</a>
+                                <a href="{{ url_for('reports.export_attendance_excel') }}" class="btn btn-outline-success">Excel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

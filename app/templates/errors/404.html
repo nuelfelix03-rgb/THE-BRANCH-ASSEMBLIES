@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found - Church Management System{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+    <i class="bi bi-emoji-frown fs-1 text-muted"></i>
+    <h1 class="display-4">404</h1>
+    <p class="lead text-muted">Page not found</p>
+    <p>The page you're looking for doesn't exist.</p>
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary"><i class="bi bi-house"></i> Go Home</a>
+</div>
+{% endblock %}

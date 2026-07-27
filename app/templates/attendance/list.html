@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Attendance - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-calendar-check"></i> Attendance Records</h4>
+    <div>
+        <a href="{{ url_for('attendance.attendance_stats') }}" class="btn btn-outline-info btn-sm me-2">
+            <i class="bi bi-graph-up"></i> Statistics
+        </a>
+        <a href="{{ url_for('attendance.bulk_attendance') }}" class="btn btn-outline-success btn-sm me-2">
+            <i class="bi bi-check-all"></i> Bulk Mark
+        </a>
+        <a href="{{ url_for('attendance.add_attendance') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg"></i> Record Attendance
+        </a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <select name="service_type" class="form-select">
+                    <option value="">All Services</option>
+                    {% for st in service_types %}
+                    <option value="{{ st }}" {% if service_filter == st %}selected{% endif %}>{{ st }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="date_from" class="form-control" value="{{ date_from }}" placeholder="From date">
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="date_to" class="form-control" value="{{ date_to }}" placeholder="To date">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-responsive-card">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Member</th>
+                        <th class="d-none d-md-table-cell">Service Type</th>
+                        <th>Status</th>
+                        <th class="d-none d-lg-table-cell">Recorded By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance_records.items %}
+                    <tr>
+                        <td data-label="Date">{{ record.date.strftime('%b %d, %Y') }}</td>
+                        <td data-label="Member">
+                            <a href="{{ url_for('members.view_member', id=record.member_id) }}" class="text-decoration-none">
+                                {{ record.member.full_name() if record.member else 'Unknown' }}
+                            </a>
+                        </td>
+                        <td data-label="Service" class="d-none d-md-table-cell"><span class="badge bg-secondary">{{ record.service_type }}</span></td>
+                        <td data-label="Status">
+                            <span class="badge bg-{{ 'success' if record.status == 'Present' else 'danger' }}">
+                                {{ record.status }}
+                            </span>
+                        </td>
+                        <td data-label="By" class="d-none d-lg-table-cell">{{ record.recorded_by_user.username if record.recorded_by_user else 'System' }}</td>
+                        <td data-label="">
+                            <a href="{{ url_for('attendance.delete_attendance', id=record.id) }}" class="btn btn-sm btn-outline-danger btn-delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="text-center py-4 text-muted">No attendance records found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if attendance_records.pages > 1 %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% for page_num in attendance_records.iter_pages() %}
+                    {% if page_num %}
+                    <li class="page-item {% if page_num == attendance_records.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('attendance.list_attendance', page=page_num, service_type=service_filter, date_from=date_from, date_to=date_to) }}">{{ page_num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

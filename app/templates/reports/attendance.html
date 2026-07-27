@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Attendance Report - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-calendar-check"></i> Attendance Report</h4>
+    <div>
+        <a href="{{ url_for('reports.export_attendance_csv') }}" class="btn btn-success btn-sm me-2">
+            <i class="bi bi-download"></i> Export CSV
+        </a>
+        <a href="{{ url_for('reports.index') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-10">
+                <select name="period" class="form-select">
+                    <option value="week" {% if period == 'week' %}selected{% endif %}>Past Week</option>
+                    <option value="month" {% if period == 'month' %}selected{% endif %}>This Month</option>
+                    <option value="year" {% if period == 'year' %}selected{% endif %}>This Year</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Apply</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-bar-chart"></i> Attendance by Service Type ({{ start_date }} - {{ today }})</div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-table"></i> Summary</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr><th>Service</th><th>Present</th><th>%</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for item in records %}
+                            <tr>
+                                <td>{{ item.service_type }}</td>
+                                <td>{{ item.present }}/{{ item.total }}</td>
+                                <td>
+                                    {% if item.total > 0 %}
+                                    <span class="badge bg-{{ 'success' if (item.present/item.total*100) >= 75 else 'warning' if (item.present/item.total*100) >= 50 else 'danger' }}">
+                                        {{ (item.present / item.total * 100)|round }}%
+                                    </span>
+                                    {% else %}N/A{% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3" class="text-center text-muted">No data</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="bi bi-calendar3"></i> Daily Attendance</div>
+    <div class="card-body">
+        <div class="chart-container">
+            <canvas id="dailyChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+{% if records %}
+new Chart(document.getElementById('attendanceChart'), {
+    type: 'bar',
+    data: {
+        labels: [{% for item in records %}'{{ item.service_type }}',{% endfor %}],
+        datasets: [{
+            label: 'Present',
+            data: [{% for item in records %}{{ item.present }},{% endfor %}],
+            backgroundColor: '#2ecc71'
+        }, {
+            label: 'Absent',
+            data: [{% for item in records %}{{ item.absent }},{% endfor %}],
+            backgroundColor: '#e74c3c'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, stacked: true }, x: { stacked: true } }
+    }
+});
+{% endif %}
+
+{% if daily_totals %}
+new Chart(document.getElementById('dailyChart'), {
+    type: 'line',
+    data: {
+        labels: [{% for item in daily_totals %}'{{ item.date }}',{% endfor %}],
+        datasets: [{
+            label: 'Total Attendance',
+            data: [{% for item in daily_totals %}{{ item.total }},{% endfor %}],
+            borderColor: '#3498db',
+            backgroundColor: 'rgba(52,152,219,0.1)',
+            tension: 0.3,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

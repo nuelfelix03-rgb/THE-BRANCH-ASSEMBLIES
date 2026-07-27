@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Edit My Profile</h4>
+    <a href="{{ url_for('main.my_profile') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <h6 class="text-danger mb-3 border-bottom pb-2"><i class="bi bi-person-badge"></i> Church Role</h6>
+                    <div class="mb-3">
+                        {{ form.position.label(class="form-label") }}
+                        {{ form.position(class="form-control", placeholder="e.g. Senior Pastor, Youth Leader, Admin") }}
+                    </div>
+
+                    <h6 class="text-danger mb-3 mt-4 border-bottom pb-2"><i class="bi bi-telephone"></i> Contact</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.phone.label(class="form-label") }}
+                            {{ form.phone(class="form-control", placeholder="Phone number") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.address.label(class="form-label") }}
+                            {{ form.address(class="form-control", placeholder="Church office address") }}
+                        </div>
+                    </div>
+
+                    <h6 class="text-danger mb-3 mt-4 border-bottom pb-2"><i class="bi bi-share"></i> Social Media</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.facebook.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-facebook"></i></span>
+                                {{ form.facebook(class="form-control", placeholder="https://facebook.com/...") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.twitter.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-twitter-x"></i></span>
+                                {{ form.twitter(class="form-control", placeholder="https://twitter.com/...") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.instagram.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-instagram"></i></span>
+                                {{ form.instagram(class="form-control", placeholder="https://instagram.com/...") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.whatsapp.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-whatsapp"></i></span>
+                                {{ form.whatsapp(class="form-control", placeholder="WhatsApp number") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.linkedin.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-linkedin"></i></span>
+                                {{ form.linkedin(class="form-control", placeholder="https://linkedin.com/in/...") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="text-danger mb-3 mt-4 border-bottom pb-2"><i class="bi bi-chat-quote"></i> About</h6>
+                    <div class="mb-3">
+                        {{ form.bio.label(class="form-label") }}
+                        {{ form.bio(class="form-control", rows=4, placeholder="Short bio / about yourself") }}
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body text-center">
+                <p class="mb-2 text-muted">Want to change your profile photo?</p>
+                <a href="{{ url_for('main.edit_my_photo') }}" class="btn btn-outline-primary"><i class="bi bi-camera"></i> Update Photo</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

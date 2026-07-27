@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Church Management System{% endblock %}
+{% block content %}
+
+<!-- Church Name Hero Banner -->
+<div class="church-hero mb-4">
+    <div class="church-hero-overlay"></div>
+    <div class="church-hero-content text-center">
+        <i class="bi bi-church church-hero-icon"></i>
+        <h1 class="church-hero-title">{{ church_settings.church_name or 'Church Management' }}</h1>
+        {% if church_settings.welcome_message %}
+        <p class="church-hero-text">{{ church_settings.welcome_message }}</p>
+        {% endif %}
+        <div class="church-hero-meta">
+            <span><i class="bi bi-calendar3 me-1"></i> {{ now().strftime('%B %d, %Y') }}</span>
+        </div>
+    </div>
+</div>
+
+{% if member %}
+<div class="row mb-4">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        {% if member.profile_picture %}
+                        <img src="{{ url_for('static', filename='uploads/' + member.profile_picture) }}" class="rounded-circle" width="60" height="60" style="object-fit:cover;border:2px solid var(--red);">
+                        {% else %}
+                        <div class="bg-primary-soft rounded-circle d-flex align-items-center justify-content-center" style="width:60px;height:60px;">
+                            <i class="bi bi-person fs-2" style="color:var(--red);"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5 class="mb-0">{{ member.full_name() }}</h5>
+                        <small class="text-muted">{{ member.member_id }}</small>
+                        <br>
+                        <span class="badge bg-success">{{ member.membership_status }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">My Attendance Rate</div>
+                        <div class="stat-value">{{ attendance_rate }}%</div>
+                    </div>
+                    <div class="card-icon bg-success-soft text-success">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+                <div class="progress mt-2" style="height:8px;">
+                    <div class="progress-bar bg-success" style="width:{{ attendance_rate }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">{{ member.ministry.name if member.ministry else 'No Ministry' }}</div>
+                        <div class="text-muted small">{{ member.ministry.description[:100] if member.ministry and member.ministry.description else 'Ministry assignment' }}</div>
+                    </div>
+                    <div class="card-icon bg-info-soft text-info">
+                        <i class="bi bi-building"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-megaphone me-2"></i>Recent Announcements</div>
+            <div class="card-body">
+                {% if recent_announcements %}
+                    {% for announcement in recent_announcements %}
+                    <div class="d-flex mb-3 pb-2 border-bottom">
+                        <div class="me-2">
+                            <span class="badge bg-{{ 'primary' if announcement.category == 'General' else 'success' if announcement.category == 'Events' else 'warning' if announcement.category == 'Meetings' else 'info' if announcement.category == 'Prayer' else 'danger' }}">{{ announcement.category }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ announcement.title }}</strong>
+                            <p class="mb-0 text-muted small">{{ announcement.content[:200] }}{% if announcement.content|length > 200 %}...{% endif %}</p>
+                            <small class="text-muted">{{ announcement.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted mb-0">No announcements yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-calendar-event me-2"></i>Upcoming Events</div>
+            <div class="card-body">
+                {% if upcoming_events %}
+                    {% for event in upcoming_events %}
+                    <div class="d-flex mb-3 pb-2 border-bottom">
+                        <div class="me-3 text-center">
+                            <div class="fw-bold" style="color:var(--red);font-size:1.3rem;">{{ event.start_date.strftime('%d') }}</div>
+                            <small class="text-muted">{{ event.start_date.strftime('%b') }}</small>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ event.name }}</h6>
+                            <small class="text-muted">{{ event.venue or 'No venue set' }}</small>
+                            <br>
+                            <small class="text-muted">{{ event.start_date.strftime('%I:%M %p') }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted mb-0">No upcoming events.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if church_info %}
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-info-circle me-2"></i>Church Information</span>
+                <a href="{{ url_for('church_info.view_info') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% for info in church_info[:3] %}
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="badge bg-primary">{{ info.category }}</span>
+                        <small class="text-muted">{{ info.updated_at.strftime('%b %d, %Y') }}</small>
+                    </div>
+                    <h6 class="mb-1">{{ info.title }}</h6>
+                    <p class="mb-0 text-muted small">{{ info.content[:200] }}{% if info.content|length > 200 %}...{% endif %}</p>
+                </div>
+                {% endfor %}
+                {% if church_info|length > 3 %}
+                <a href="{{ url_for('church_info.view_info') }}" class="btn btn-sm btn-outline-primary w-100">View All {{ church_info|length }} Items</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if leadership %}
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-people me-2"></i>Church Leadership</div>
+            <div class="card-body">
+                {% for user in leadership %}
+                <a href="{{ url_for('main.view_user_profile', id=user.id) }}" class="text-decoration-none">
+                    <div class="d-flex flex-wrap mb-3 pb-3 border-bottom">
+                        <div class="d-flex align-items-center w-100">
+                            <div class="flex-shrink-0">
+                                {% if user.profile_picture %}
+                                <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" class="rounded-circle" width="50" height="50" style="object-fit:cover;border:2px solid var(--fire);">
+                                {% else %}
+                                <div class="bg-primary-soft rounded-circle d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+                                    <i class="bi bi-person fs-4" style="color:var(--fire);"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0" style="color:var(--text-main);">{{ user.username }}</h6>
+                                <small class="text-muted">{{ user.position or user.role | replace('_', ' ') | title }}</small>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted flex-shrink-0"></i>
+                        </div>
+                        <div class="mt-2 small w-100 ps-0 ps-md-4">
+                            <span class="me-3 d-inline-block"><i class="bi bi-envelope" style="color:var(--fire);"></i> {{ user.email }}</span>
+                            {% if user.phone %}<span class="me-3 d-inline-block"><a href="tel:{{ user.phone | replace(' ', '') | replace('-', '') | replace('(', '') | replace(')', '') | replace('+', '00') }}" class="text-decoration-none" style="color:inherit;"><i class="bi bi-telephone" style="color:var(--fire);"></i> {{ user.phone }}</a></span>{% endif %}
+                            {% if user.address %}<span class="d-inline-block"><i class="bi bi-geo-alt" style="color:var(--fire);"></i> {{ user.address }}</span>{% endif %}
+                        </div>
+                        <div class="mt-2 w-100 ps-0 ps-md-4">
+                            {% if user.facebook %}<a href="{{ user.facebook }}" target="_blank" class="btn btn-sm px-2 py-0 me-1" style="color:var(--fire);" title="Facebook"><i class="bi bi-facebook"></i></a>{% endif %}
+                            {% if user.twitter %}<a href="{{ user.twitter }}" target="_blank" class="btn btn-sm px-2 py-0 me-1" style="color:var(--fire);" title="Twitter / X"><i class="bi bi-twitter-x"></i></a>{% endif %}
+                            {% if user.instagram %}<a href="{{ user.instagram }}" target="_blank" class="btn btn-sm px-2 py-0 me-1" style="color:var(--fire);" title="Instagram"><i class="bi bi-instagram"></i></a>{% endif %}
+                            {% if user.whatsapp %}<a href="https://wa.me/{{ user.whatsapp }}" target="_blank" class="btn btn-sm px-2 py-0 me-1" style="color:var(--fire);" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>{% endif %}
+                            {% if user.linkedin %}<a href="{{ user.linkedin }}" target="_blank" class="btn btn-sm px-2 py-0 me-1" style="color:var(--fire);" title="LinkedIn"><i class="bi bi-linkedin"></i></a>{% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-clock-history me-2"></i>My Recent Attendance</div>
+            <div class="card-body">
+                {% if my_attendance %}
+                    {% for a in my_attendance %}
+                    <div class="d-flex justify-content-between mb-2 pb-1 border-bottom">
+                        <span>{{ a.service_type }}</span>
+                        <span>
+                            <small class="text-muted me-2">{{ a.date.strftime('%b %d') }}</small>
+                            <span class="badge bg-{{ 'success' if a.status == 'Present' else 'danger' }}">{{ a.status }}</span>
+                        </span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p class="text-muted mb-0">No attendance records yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card border-danger mb-4" style="border:2px solid var(--red) !important;">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-person-plus" style="font-size:3rem;color:var(--red);"></i>
+        <h4 class="mt-3">Welcome, {{ current_user.username }}!</h4>
+        <p class="text-muted mb-1">Complete your member profile to get started.</p>
+        <p class="text-muted mb-4">Fill in your personal details so the church can know you better.</p>
+        <a href="{{ url_for('main.register_profile') }}" class="btn btn-primary btn-lg px-5">
+            <i class="bi bi-pencil-square"></i> Complete My Profile
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-megaphone"></i> Recent Announcements</div>
+            <div class="card-body">
+                {% if recent_announcements %}
+                    {% for a in recent_announcements %}
+                    <div class="mb-2 pb-2 border-bottom"><strong>{{ a.title }}</strong><br><small class="text-muted">{{ a.content[:150] }}</small></div>
+                    {% endfor %}
+                {% else %}<p class="text-muted mb-0">No announcements.</p>{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-calendar-event"></i> Upcoming Events</div>
+            <div class="card-body">
+                {% if upcoming_events %}
+                    {% for e in upcoming_events %}
+                    <div class="mb-2 pb-2 border-bottom"><strong>{{ e.name }}</strong><br><small class="text-muted">{{ e.start_date.strftime('%b %d, %I:%M %p') }}</small></div>
+                    {% endfor %}
+                {% else %}<p class="text-muted mb-0">No events.</p>{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

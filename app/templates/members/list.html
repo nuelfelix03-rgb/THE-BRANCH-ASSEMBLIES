@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Members - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-people"></i> Members</h4>
+    <div>
+        <a href="{{ url_for('members.export_members') }}" class="btn btn-outline-success btn-sm me-2">
+            <i class="bi bi-download"></i> Export CSV
+        </a>
+        <a href="{{ url_for('members.add_member') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg"></i> Add Member
+        </a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="Search by name, ID, or phone..." value="{{ search }}">
+            </div>
+            <div class="col-md-3">
+                <select name="ministry" class="form-select">
+                    <option value="">All Ministries</option>
+                    {% for ministry in ministries %}
+                    <option value="{{ ministry.id }}" {% if ministry_filter|string == ministry.id|string %}selected{% endif %}>{{ ministry.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="Active" {% if status_filter == 'Active' %}selected{% endif %}>Active</option>
+                    <option value="Inactive" {% if status_filter == 'Inactive' %}selected{% endif %}>Inactive</option>
+                    <option value="Transferred" {% if status_filter == 'Transferred' %}selected{% endif %}>Transferred</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-responsive-card">
+                <thead>
+                    <tr>
+                        <th>Member ID</th>
+                        <th>Name</th>
+                        <th class="d-none d-md-table-cell">Gender</th>
+                        <th class="d-none d-md-table-cell">Phone</th>
+                        <th class="d-none d-lg-table-cell">Ministry</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in members.items %}
+                    <tr>
+                        <td data-label="ID"><span class="badge bg-secondary">{{ member.member_id }}</span></td>
+                        <td data-label="Name">
+                            <a href="{{ url_for('members.view_member', id=member.id) }}" class="text-decoration-none fw-medium">
+                                {{ member.full_name() }}
+                            </a>
+                        </td>
+                        <td data-label="Gender" class="d-none d-md-table-cell">{{ member.gender or '-' }}</td>
+                        <td data-label="Phone" class="d-none d-md-table-cell">{% if member.phone_number %}<a href="tel:{{ member.phone_number | replace(' ', '') | replace('-', '') | replace('(', '') | replace(')', '') | replace('+', '00') }}" class="text-decoration-none" style="color:inherit;">{{ member.phone_number }}</a>{% else %}-{% endif %}</td>
+                        <td data-label="Ministry" class="d-none d-lg-table-cell">{{ member.ministry.name if member.ministry else '-' }}</td>
+                        <td data-label="Status">
+                            <span class="badge bg-{{ 'success' if member.membership_status == 'Active' else 'secondary' }}">
+                                {{ member.membership_status }}
+                            </span>
+                        </td>
+                        <td data-label="Actions">
+                            <a href="{{ url_for('members.view_member', id=member.id) }}" class="btn btn-sm btn-outline-info" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{{ url_for('members.edit_member', id=member.id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{{ url_for('members.delete_member', id=member.id) }}" class="btn btn-sm btn-outline-danger btn-delete" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="text-center py-4 text-muted">No members found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if members.pages > 1 %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% for page_num in members.iter_pages() %}
+                    {% if page_num %}
+                    <li class="page-item {% if page_num == members.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('members.list_members', page=page_num, search=search, ministry=ministry_filter, status=status_filter) }}">{{ page_num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

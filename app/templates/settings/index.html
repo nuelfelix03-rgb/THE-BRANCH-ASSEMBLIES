@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Settings - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-gear"></i> Church Settings</h4>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    {{ form.church_name.label(class="form-label") }}
+                    {{ form.church_name(class="form-control") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.church_phone.label(class="form-label") }}
+                    {{ form.church_phone(class="form-control") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.church_email.label(class="form-label") }}
+                    {{ form.church_email(class="form-control") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.church_address.label(class="form-label") }}
+                    {{ form.church_address(class="form-control", rows=2) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.service_times.label(class="form-label") }}
+                    {{ form.service_times(class="form-control", rows=3, placeholder="Sunday: 9:00 AM & 11:00 AM&#10;Wednesday: 7:00 PM") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.welcome_message.label(class="form-label") }}
+                    {{ form.welcome_message(class="form-control", rows=3) }}
+                </div>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

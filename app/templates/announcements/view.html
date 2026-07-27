@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ announcement.title }} - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-megaphone"></i> Announcement</h4>
+    <div>
+        {% if current_user.role != 'member' %}
+        <a href="{{ url_for('announcements.edit_announcement', id=announcement.id) }}" class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+        {% endif %}
+        <a href="{{ url_for('announcements.list_announcements') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="mb-3">
+            <span class="badge bg-{{ 'primary' if announcement.category == 'General' else 'success' if announcement.category == 'Events' else 'warning' if announcement.category == 'Meetings' else 'info' if announcement.category == 'Prayer' else 'danger' }}">{{ announcement.category }}</span>
+            <span class="badge bg-{{ 'success' if announcement.status == 'Published' else 'secondary' }}">{{ announcement.status }}</span>
+        </div>
+        <h4>{{ announcement.title }}</h4>
+        <p class="text-muted small">By {{ announcement.author.username if announcement.author else 'Unknown' }} | {{ announcement.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+        <p class="text-muted small">Views: {{ read_count|default(0) }}</p>
+        <hr>
+        <p class="card-text" style="white-space: pre-wrap;">{{ announcement.content }}</p>
+        {% if announcement.scheduled_date %}
+        <p class="text-muted small mt-3">Scheduled for: {{ announcement.scheduled_date.strftime('%B %d, %Y at %I:%M %p') }}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

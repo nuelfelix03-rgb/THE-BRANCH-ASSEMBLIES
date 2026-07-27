@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{{ ministry.name }} - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-building"></i> {{ ministry.name }}</h4>
+    <div>
+        <a href="{{ url_for('ministries.edit_ministry', id=ministry.id) }}" class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+        <a href="{{ url_for('ministries.list_ministries') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-building fs-1 text-primary"></i>
+                <h5 class="mt-2">{{ ministry.name }}</h5>
+                <p class="text-muted small">Leader: {{ ministry.leader or 'Not assigned' }}</p>
+                {% if ministry.leader_user %}
+                <p class="text-muted small">User: {{ ministry.leader_user.username }}</p>
+                {% endif %}
+                <hr>
+                <h3 class="text-primary">{{ members|length }}</h3>
+                <small class="text-muted">Members</small>
+            </div>
+        </div>
+        {% if ministry.description %}
+        <div class="card mt-4">
+            <div class="card-header">Description</div>
+            <div class="card-body"><p class="mb-0">{{ ministry.description }}</p></div>
+        </div>
+        {% endif %}
+
+        {% if can_edit %}
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-person-plus"></i> Assign Member</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('ministries.assign_member', id=ministry.id) }}">
+                    <div class="input-group">
+                        <select name="member_id" class="form-select" required>
+                            <option value="">Select member...</option>
+                            {% for m in unassigned_members %}
+                            <option value="{{ m.id }}">{{ m.member_id }} - {{ m.full_name() }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-plus"></i> Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-people"></i> Members ({{ members|length }})</div>
+            <div class="card-body">
+                {% if members %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr><th>Member ID</th><th>Name</th><th>Phone</th><th>Action</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for member in members %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ member.member_id }}</span></td>
+                                <td><a href="{{ url_for('members.view_member', id=member.id) }}" class="text-decoration-none">{{ member.full_name() }}</a></td>
+                                <td>{% if member.phone_number %}<a href="tel:{{ member.phone_number | replace(' ', '') | replace('-', '') | replace('(', '') | replace(')', '') | replace('+', '00') }}" class="text-decoration-none" style="color:inherit;">{{ member.phone_number }}</a>{% else %}-{% endif %}</td>
+                                <td>
+                                    <a href="{{ url_for('members.view_member', id=member.id) }}" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a>
+                                    {% if can_edit %}
+                                    <a href="{{ url_for('ministries.remove_member', ministry_id=ministry.id, member_id=member.id) }}" class="btn btn-sm btn-outline-danger btn-delete"><i class="bi bi-x"></i></a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No members assigned to this ministry.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

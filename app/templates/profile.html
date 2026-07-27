@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}My Profile - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-person-circle"></i> My Profile</h4>
+    <div>
+        {% if current_user.role != 'member' %}
+        <a href="{{ url_for('main.edit_admin_profile') }}" class="btn btn-outline-primary btn-sm me-2">
+            <i class="bi bi-pencil"></i> Edit Info
+        </a>
+        {% endif %}
+        <a href="{{ url_for('main.edit_my_photo') }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-camera"></i> Update Photo
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                {% if current_user.role == 'member' and member and member.profile_picture %}
+                <img src="{{ url_for('static', filename='uploads/' + member.profile_picture) }}" class="member-avatar mb-3">
+                {% elif current_user.profile_picture %}
+                <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" class="member-avatar mb-3">
+                {% else %}
+                <div class="mb-3 d-inline-block">
+                    <i class="bi bi-person-circle" style="font-size:100px;color:var(--red);"></i>
+                </div>
+                {% endif %}
+                <h5>{{ current_user.username }}</h5>
+                <p class="text-muted">{{ current_user.email }}</p>
+                <span class="badge bg-{{ 'danger' if current_user.role == 'super_admin' else 'primary' if current_user.role == 'church_admin' else 'info' if current_user.role == 'ministry_leader' else 'secondary' }} fs-6 mb-2">
+                    {{ current_user.role | replace('_', ' ') | title }}
+                </span>
+                {% if current_user.position %}
+                <p class="mt-1 mb-0"><i class="bi bi-briefcase me-1"></i> {{ current_user.position }}</p>
+                {% endif %}
+                <hr>
+                <small class="text-muted">Member since {{ current_user.created_at.strftime('%B %d, %Y') }}</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-info-circle"></i> Account Details</div>
+            <div class="card-body">
+                <dl class="row profile-info mb-0">
+                    <dt class="col-sm-4">Username</dt>
+                    <dd class="col-sm-8">{{ current_user.username }}</dd>
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">{{ current_user.email }}</dd>
+                    <dt class="col-sm-4">Role</dt>
+                    <dd class="col-sm-8">{{ current_user.role | replace('_', ' ') | title }}</dd>
+                    <dt class="col-sm-4">Account Status</dt>
+                    <dd class="col-sm-8"><span class="badge bg-{{ 'success' if current_user.is_active else 'danger' }}">{{ 'Active' if current_user.is_active else 'Inactive' }}</span></dd>
+                    {% if current_user.phone %}
+                    <dt class="col-sm-4">Phone</dt>
+                    <dd class="col-sm-8"><a href="tel:{{ current_user.phone | replace(' ', '') | replace('-', '') | replace('(', '') | replace(')', '') | replace('+', '00') }}" class="text-decoration-none" style="color:inherit;">{{ current_user.phone }}</a></dd>
+                    {% endif %}
+                    {% if current_user.position %}
+                    <dt class="col-sm-4">Position</dt>
+                    <dd class="col-sm-8">{{ current_user.position }}</dd>
+                    {% endif %}
+                    <dt class="col-sm-4">Registered</dt>
+                    <dd class="col-sm-8">{{ current_user.created_at.strftime('%B %d, %Y at %I:%M %p') }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        {% if current_user.bio %}
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-chat-quote"></i> About</div>
+            <div class="card-body">
+                <p class="mb-0">{{ current_user.bio }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if member %}
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-person-vcard"></i> Member Details</div>
+            <div class="card-body">
+                <dl class="row profile-info mb-0">
+                    <dt class="col-sm-4">Full Name</dt>
+                    <dd class="col-sm-8">{{ member.full_name() }}{% if member.middle_name %} {{ member.middle_name }}{% endif %}</dd>
+                    <dt class="col-sm-4">Member ID</dt>
+                    <dd class="col-sm-8"><span class="badge bg-secondary">{{ member.member_id }}</span></dd>
+                    <dt class="col-sm-4">Gender</dt>
+                    <dd class="col-sm-8">{{ member.gender or 'Not specified' }}</dd>
+                    <dt class="col-sm-4">Date of Birth</dt>
+                    <dd class="col-sm-8">{{ member.date_of_birth.strftime('%B %d, %Y') if member.date_of_birth else 'Not specified' }}</dd>
+                    <dt class="col-sm-4">Marital Status</dt>
+                    <dd class="col-sm-8">{{ member.marital_status }}</dd>
+                    <dt class="col-sm-4">Phone</dt>
+                    <dd class="col-sm-8">{{ member.phone_number or 'Not specified' }}</dd>
+                    <dt class="col-sm-4">Address</dt>
+                    <dd class="col-sm-8">{{ member.residential_address or 'Not specified' }}</dd>
+                    <dt class="col-sm-4">Baptism Status</dt>
+                    <dd class="col-sm-8">{{ member.baptism_status }}</dd>
+                    <dt class="col-sm-4">Ministry</dt>
+                    <dd class="col-sm-8">{{ member.ministry.name if member.ministry else 'Not assigned' }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        {% if member.emergency_contact_name %}
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-telephone-forward"></i> Emergency Contact</div>
+            <div class="card-body">
+                <dl class="row profile-info mb-0">
+                    <dt class="col-sm-4">Name</dt>
+                    <dd class="col-sm-8">{{ member.emergency_contact_name }}</dd>
+                    <dt class="col-sm-4">Relationship</dt>
+                    <dd class="col-sm-8">{{ member.emergency_contact_relationship }}</dd>
+                    <dt class="col-sm-4">Phone</dt>
+                    <dd class="col-sm-8">{{ member.emergency_contact_phone }}</dd>
+                </dl>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

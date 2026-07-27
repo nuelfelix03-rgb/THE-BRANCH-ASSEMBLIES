@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Ministries - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-building"></i> Ministries & Departments</h4>
+    <a href="{{ url_for('ministries.add_ministry') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg"></i> Add Ministry
+    </a>
+</div>
+
+<div class="row">
+    {% for ministry in ministries %}
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title mb-0">{{ ministry.name }}</h5>
+                    <div>
+                        <a href="{{ url_for('ministries.edit_ministry', id=ministry.id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{{ url_for('ministries.delete_ministry', id=ministry.id) }}" class="btn btn-sm btn-outline-danger btn-delete" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </div>
+                {% if ministry.description %}
+                <p class="card-text text-muted small">{{ ministry.description[:200] }}{% if ministry.description|length > 200 %}...{% endif %}</p>
+                {% endif %}
+                <div class="d-flex justify-content-between text-muted small mb-3">
+                    <span><i class="bi bi-person"></i> Leader: {{ ministry.leader or 'Not assigned' }}</span>
+                    <span><i class="bi bi-people"></i> {{ ministry.members.count() }} members</span>
+                </div>
+                <a href="{{ url_for('ministries.view_ministry', id=ministry.id) }}" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-eye"></i> View Details
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-building fs-1 text-muted"></i>
+                <p class="mt-3 text-muted">No ministries created yet.</p>
+                <a href="{{ url_for('ministries.add_ministry') }}" class="btn btn-primary">Create First Ministry</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

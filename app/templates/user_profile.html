@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.username }} - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-person-badge"></i> {{ profile_user.role | replace('_', ' ') | title }} Profile</h4>
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                {% if profile_user.role == 'member' and member and member.profile_picture %}
+                <img src="{{ url_for('static', filename='uploads/' + member.profile_picture) }}" class="member-avatar mb-3">
+                {% elif profile_user.profile_picture %}
+                <img src="{{ url_for('static', filename='uploads/' + profile_user.profile_picture) }}" class="member-avatar mb-3">
+                {% else %}
+                <div class="mb-3 d-inline-block">
+                    <i class="bi bi-person-circle" style="font-size:100px;color:var(--fire);"></i>
+                </div>
+                {% endif %}
+                <h5>{{ profile_user.username }}</h5>
+                <p class="text-muted">{{ profile_user.email }}</p>
+                <span class="badge bg-{{ 'danger' if profile_user.role == 'super_admin' else 'primary' if profile_user.role == 'church_admin' else 'info' if profile_user.role == 'ministry_leader' else 'secondary' }} fs-6 mb-2">
+                    {{ profile_user.role | replace('_', ' ') | title }}
+                </span>
+                {% if profile_user.position %}
+                <p class="mt-2 mb-0 fw-bold" style="color:var(--fire);">{{ profile_user.position }}</p>
+                {% endif %}
+
+                {% if profile_user.phone or profile_user.address or profile_user.facebook or profile_user.instagram or profile_user.twitter or profile_user.whatsapp or profile_user.linkedin %}
+                <hr>
+                <div class="text-start">
+                    {% if profile_user.phone %}
+                    <p class="mb-1 small"><i class="bi bi-telephone me-2" style="color:var(--fire);"></i> <a href="tel:{{ profile_user.phone | replace(' ', '') | replace('-', '') | replace('(', '') | replace(')', '') | replace('+', '00') }}" class="text-decoration-none" style="color:inherit;">{{ profile_user.phone }}</a></p>
+                    {% endif %}
+                    {% if profile_user.address %}
+                    <p class="mb-1 small"><i class="bi bi-geo-alt me-2" style="color:var(--fire);"></i> {{ profile_user.address }}</p>
+                    {% endif %}
+                </div>
+                <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap">
+                    {% if profile_user.facebook %}
+                    <a href="{{ profile_user.facebook }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    {% endif %}
+                    {% if profile_user.twitter %}
+                    <a href="{{ profile_user.twitter }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Twitter / X"><i class="bi bi-twitter-x"></i></a>
+                    {% endif %}
+                    {% if profile_user.instagram %}
+                    <a href="{{ profile_user.instagram }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    {% endif %}
+                    {% if profile_user.whatsapp %}
+                    <a href="https://wa.me/{{ profile_user.whatsapp }}" target="_blank" class="btn btn-sm btn-outline-primary" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                    {% endif %}
+                    {% if profile_user.linkedin %}
+                    <a href="{{ profile_user.linkedin }}" target="_blank" class="btn btn-sm btn-outline-primary" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 mb-4">
+        <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-info-circle"></i> Account Details</div>
+            <div class="card-body">
+                <dl class="row profile-info mb-0">
+                    <dt class="col-sm-4">Username</dt>
+                    <dd class="col-sm-8">{{ profile_user.username }}</dd>
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8"><a href="mailto:{{ profile_user.email }}">{{ profile_user.email }}</a></dd>
+                    <dt class="col-sm-4">Role</dt>
+                    <dd class="col-sm-8">{{ profile_user.role | replace('_', ' ') | title }}</dd>
+                    {% if profile_user.phone %}
+                    <dt class="col-sm-4">Phone</dt>
+                    <dd class="col-sm-8"><a href="tel:{{ profile_user.phone | replace(' ', '') | replace('-', '') | replace('(', '') | replace(')', '') | replace('+', '00') }}" class="text-decoration-none" style="color:inherit;">{{ profile_user.phone }}</a></dd>
+                    {% endif %}
+                    {% if profile_user.position %}
+                    <dt class="col-sm-4">Position</dt>
+                    <dd class="col-sm-8">{{ profile_user.position }}</dd>
+                    {% endif %}
+                    {% if profile_user.address %}
+                    <dt class="col-sm-4">Address</dt>
+                    <dd class="col-sm-8">{{ profile_user.address }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+
+        {% if profile_user.bio %}
+        <div class="card">
+            <div class="card-header"><i class="bi bi-chat-quote"></i> About</div>
+            <div class="card-body">
+                <p class="mb-0">{{ profile_user.bio }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if member %}
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-person-vcard"></i> Member Info</div>
+            <div class="card-body">
+                <dl class="row profile-info mb-0">
+                    <dt class="col-sm-4">Full Name</dt>
+                    <dd class="col-sm-8">{{ member.full_name() }}</dd>
+                    <dt class="col-sm-4">Member ID</dt>
+                    <dd class="col-sm-8"><span class="badge bg-secondary">{{ member.member_id }}</span></dd>
+                    <dt class="col-sm-4">Ministry</dt>
+                    <dd class="col-sm-8">{{ member.ministry.name if member.ministry else 'Not assigned' }}</dd>
+                </dl>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

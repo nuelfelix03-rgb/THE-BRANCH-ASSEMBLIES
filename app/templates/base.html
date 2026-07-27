@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="theme-color" content="#d32f2f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ChurchMS">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ChurchMS">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="icon" href="{{ url_for('static', filename='icons/icon-192.png') }}" sizes="192x192" type="image/png">
+    <link rel="icon" href="{{ url_for('static', filename='icons/icon-192.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.svg') }}" sizes="192x192" type="image/svg+xml">
+    <meta name="apple-touch-startup-image" content="{{ url_for('static', filename='icons/icon-512.png') }}">
+    <title>{% block title %}Church Management System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <div class="d-flex" id="wrapper">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ url_for('main.dashboard') }}" class="text-decoration-none">
+                    <h5><i class="bi bi-church"></i> {{ church_settings.church_name or 'CMS' }}</h5>
+                </a>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                {% if current_user.role != 'member' %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('members') %}active{% endif %}" href="{{ url_for('members.list_members') }}">
+                        <i class="bi bi-people"></i> Members
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('attendance') %}active{% endif %}" href="{{ url_for('attendance.list_attendance') }}">
+                        <i class="bi bi-calendar-check"></i> Attendance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('ministries') %}active{% endif %}" href="{{ url_for('ministries.list_ministries') }}">
+                        <i class="bi bi-building"></i> Ministries
+                    </a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('announcements') %}active{% endif %}" href="{{ url_for('announcements.list_announcements') }}">
+                        <i class="bi bi-megaphone"></i> Announcements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('events') %}active{% endif %}" href="{{ url_for('events.list_events') }}">
+                        <i class="bi bi-calendar-event"></i> Events
+                    </a>
+                </li>
+                {% if current_user.role != 'member' %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('church_info') %}active{% endif %}" href="{{ url_for('church_info.list_info') }}">
+                        <i class="bi bi-info-circle"></i> Church Information
+                    </a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('notifications') %}active{% endif %}" href="{{ url_for('notifications.list_notifications') }}">
+                        <i class="bi bi-bell"></i> Notifications
+                        <span class="badge bg-danger rounded-pill notification-badge" id="notif-count">0</span>
+                    </a>
+                </li>
+                {% if current_user.role != 'member' %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('reports') %}active{% endif %}" href="{{ url_for('reports.index') }}">
+                        <i class="bi bi-file-earmark-bar-graph"></i> Reports
+                    </a>
+                </li>
+                {% endif %}
+                {% if current_user.role == 'super_admin' %}
+                <li class="nav-item mt-2">
+                    <small class="text-muted px-3">ADMINISTRATION</small>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('admin') %}active{% endif %}" href="{{ url_for('admin.list_users') }}">
+                        <i class="bi bi-shield-lock"></i> Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('settings') %}active{% endif %}" href="{{ url_for('settings.index') }}">
+                        <i class="bi bi-gear"></i> Settings
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand shadow-sm px-2 px-md-3">
+                <button class="btn btn-outline-secondary border-0" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+                <div class="ms-auto d-flex align-items-center gap-2">
+                    <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+                        <i class="bi bi-moon-fill" id="themeIcon"></i>
+                    </button>
+                    <a href="{{ url_for('notifications.list_notifications') }}" class="position-relative text-decoration-none px-2" id="notifDropdown" aria-label="Notifications">
+                        <i class="bi bi-bell fs-5" style="color:var(--text-main)"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge" id="notif-badge">0</span>
+                    </a>
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle py-2" data-bs-toggle="dropdown" aria-label="User menu">
+                            <i class="bi bi-person-circle fs-4 me-1"></i>
+                            <span class="d-none d-sm-inline">{{ current_user.username }}</span>
+                            <span class="badge bg-info ms-1 d-none d-md-inline">{{ current_user.role }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('main.my_profile') }}"><i class="bi bi-person"></i> My Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container-fluid p-3 p-md-4">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show py-2 py-md-3" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="container px-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show mt-3 py-2 py-md-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% block auth_content %}{% endblock %}
+    </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+    <script>
+    // Theme toggle
+    (function() {
+        const html = document.documentElement;
+        const icon = document.getElementById('themeIcon');
+        const stored = localStorage.getItem('theme');
+        if (stored) html.setAttribute('data-bs-theme', stored);
+
+        document.getElementById('themeToggle')?.addEventListener('click', function() {
+            const current = html.getAttribute('data-bs-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', next);
+            localStorage.setItem('theme', next);
+            if (icon) icon.className = next === 'dark' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+        });
+    })();
+
+    // Service worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('{{ url_for("static", filename="sw.js") }}');
+    }
+
+    // Close sidebar on mobile after navigation
+    document.querySelectorAll('.sidebar .nav-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar')?.classList.remove('active');
+                document.getElementById('page-content-wrapper')?.classList.remove('active');
+            }
+        });
+    });
+    </script>
+</body>
+</html>

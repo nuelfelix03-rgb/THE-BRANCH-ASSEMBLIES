@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}User Management - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-people"></i> User Management</h4>
+    <a href="{{ url_for('admin.add_user') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg"></i> Add User
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-10">
+                <select name="role" class="form-select">
+                    <option value="">All Roles</option>
+                    <option value="super_admin" {% if role_filter == 'super_admin' %}selected{% endif %}>Super Admin</option>
+                    <option value="church_admin" {% if role_filter == 'church_admin' %}selected{% endif %}>Church Admin</option>
+                    <option value="ministry_leader" {% if role_filter == 'ministry_leader' %}selected{% endif %}>Ministry Leader</option>
+                    <option value="member" {% if role_filter == 'member' %}selected{% endif %}>Member</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-responsive-card">
+                <thead>
+                    <tr><th>Username</th><th class="d-none d-md-table-cell">Email</th><th>Role</th><th>Status</th><th class="d-none d-lg-table-cell">Joined</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for user in users.items %}
+                    <tr>
+                        <td data-label="Username"><strong>{{ user.username }}</strong></td>
+                        <td data-label="Email" class="d-none d-md-table-cell">{{ user.email }}</td>
+                        <td data-label="Role"><span class="badge bg-{{ 'danger' if user.role == 'super_admin' else 'primary' if user.role == 'church_admin' else 'info' if user.role == 'ministry_leader' else 'secondary' }}">{{ user.role }}</span></td>
+                        <td data-label="Status"><span class="badge bg-{{ 'success' if user.is_active else 'danger' }}">{{ 'Active' if user.is_active else 'Inactive' }}</span></td>
+                        <td data-label="Joined" class="d-none d-lg-table-cell">{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                        <td data-label="">
+                            <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                            {% if user.id != current_user.id %}
+                            <a href="{{ url_for('admin.delete_user', id=user.id) }}" class="btn btn-sm btn-outline-danger btn-delete"><i class="bi bi-trash"></i></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="text-center py-4 text-muted">No users found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if users.pages > 1 %}
+        <nav><ul class="pagination justify-content-center">
+            {% for page_num in users.iter_pages() %}
+                {% if page_num %}
+                <li class="page-item {% if page_num == users.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin.list_users', page=page_num, role=role_filter) }}">{{ page_num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul></nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

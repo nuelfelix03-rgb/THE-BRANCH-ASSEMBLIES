@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-speedometer2"></i> Dashboard</h4>
+    <span class="text-muted">{{ now().strftime('%B %d, %Y') if now else '' }}</span>
+</div>
+
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Total Members</div>
+                        <div class="stat-value">{{ total_members }}</div>
+                    </div>
+                    <div class="card-icon bg-primary-soft text-primary">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Ministries</div>
+                        <div class="stat-value">{{ total_ministries }}</div>
+                    </div>
+                    <div class="card-icon bg-success-soft text-success">
+                        <i class="bi bi-building"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Attendance This Week</div>
+                        <div class="stat-value">{{ attendance_this_week }}</div>
+                    </div>
+                    <div class="card-icon bg-warning-soft text-warning">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Attendance This Month</div>
+                        <div class="stat-value">{{ attendance_this_month }}</div>
+                    </div>
+                    <div class="card-icon bg-info-soft text-info">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-graph-up me-2"></i>Member Growth
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-calendar-event me-2"></i>Upcoming Events
+            </div>
+            <div class="card-body">
+                {% if upcoming_events %}
+                    {% for event in upcoming_events %}
+                    <div class="d-flex mb-3 pb-2 border-bottom">
+                        <div class="me-3 text-center">
+                            <div class="fw-bold text-primary fs-5">{{ event.start_date.strftime('%d') }}</div>
+                            <small class="text-muted">{{ event.start_date.strftime('%b') }}</small>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ event.name }}</h6>
+                            <small class="text-muted">{{ event.venue or 'No venue set' }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">No upcoming events.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-megaphone me-2"></i>Recent Announcements
+            </div>
+            <div class="card-body">
+                {% if recent_announcements %}
+                    {% for announcement in recent_announcements %}
+                    <div class="d-flex mb-3 pb-2 border-bottom">
+                        <div>
+                            <span class="badge bg-{{ 'primary' if announcement.category == 'General' else 'success' if announcement.category == 'Events' else 'warning' if announcement.category == 'Meetings' else 'info' if announcement.category == 'Prayer' else 'danger' }} me-2">{{ announcement.category }}</span>
+                            <strong>{{ announcement.title }}</strong>
+                            <p class="mb-0 text-muted small">{{ announcement.content[:150] }}{% if announcement.content|length > 150 %}...{% endif %}</p>
+                            <small class="text-muted">{{ announcement.created_at.strftime('%b %d, %Y %I:%M %p') }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">No announcements yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const ctx = document.getElementById('growthChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ monthly_growth.labels | tojson }},
+        datasets: [{
+            label: 'New Members',
+            data: {{ monthly_growth.data | tojson }},
+            borderColor: '#3498db',
+            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+{% endblock %}

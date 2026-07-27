@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Attendance Statistics - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-graph-up"></i> Attendance Statistics</h4>
+    <a href="{{ url_for('attendance.list_attendance') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header"><i class="bi bi-bar-chart"></i> Weekly Attendance by Service</div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header"><i class="bi bi-calendar3"></i> Monthly Attendance Trend</div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="bi bi-table"></i> Weekly Summary</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr><th>Service Type</th><th>Total</th><th>Present</th><th>Attendance %</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in weekly_data %}
+                    <tr>
+                        <td>{{ item.service_type }}</td>
+                        <td>{{ item.total }}</td>
+                        <td>{{ item.present }}</td>
+                        <td>
+                            {% if item.total > 0 %}
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" style="width: {{ (item.present / item.total * 100)|round }}%">
+                                    {{ (item.present / item.total * 100)|round }}%
+                                </div>
+                            </div>
+                            {% else %}0%{% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center text-muted">No data for this week.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const weeklyLabels = [{% for item in weekly_data %}'{{ item.service_type }}',{% endfor %}];
+const weeklyPresent = [{% for item in weekly_data %}{{ item.present }},{% endfor %}];
+const weeklyTotal = [{% for item in weekly_data %}{{ item.total }},{% endfor %}];
+const monthlyLabels = [{% for item in monthly_data %}'{{ item.month }}',{% endfor %}];
+const monthlyTotal = [{% for item in monthly_data %}{{ item.total }},{% endfor %}];
+const monthlyPresent = [{% for item in monthly_data %}{{ item.present }},{% endfor %}];
+
+new Chart(document.getElementById('weeklyChart'), {
+    type: 'bar',
+    data: {
+        labels: weeklyLabels.length ? weeklyLabels : ['No Data'],
+        datasets: [{
+            label: 'Present',
+            data: weeklyLabels.length ? weeklyPresent : [0],
+            backgroundColor: '#2ecc71'
+        }, {
+            label: 'Absent',
+            data: weeklyLabels.length ? weeklyTotal.map((t, i) => t - weeklyPresent[i]) : [0],
+            backgroundColor: '#e74c3c'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } },
+        scales: { y: { beginAtZero: true, stacked: true }, x: { stacked: true } }
+    }
+});
+
+new Chart(document.getElementById('monthlyChart'), {
+    type: 'line',
+    data: {
+        labels: monthlyLabels.length ? monthlyLabels : ['No Data'],
+        datasets: [{
+            label: 'Present',
+            data: monthlyLabels.length ? monthlyPresent : [0],
+            borderColor: '#2ecc71',
+            backgroundColor: 'rgba(46,204,113,0.1)',
+            tension: 0.3,
+            fill: true
+        }, {
+            label: 'Total',
+            data: monthlyLabels.length ? monthlyTotal : [0],
+            borderColor: '#3498db',
+            backgroundColor: 'rgba(52,152,219,0.1)',
+            tension: 0.3,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Bulk Attendance - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-check-all"></i> Bulk Attendance Marking</h4>
+    <a href="{{ url_for('attendance.list_attendance') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-5">
+                <select name="service_type" class="form-select">
+                    {% for st in service_types %}
+                    <option value="{{ st }}" {% if service_type == st %}selected{% endif %}>{{ st }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <input type="date" name="date" class="form-control" value="{{ attendance_date }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-arrow-repeat"></i> Load</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="d-flex justify-content-between mb-3">
+                <h5 class="mb-0">{{ service_type }} - {{ attendance_date }}</h5>
+                <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save Attendance</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">
+                                <input type="checkbox" class="form-check-input" id="checkAll">
+                            </th>
+                            <th>Member ID</th>
+                            <th>Name</th>
+                            <th>Ministry</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in members %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input member-checkbox" name="status_{{ member.id }}" value="Present" checked>
+                            </td>
+                            <td><span class="badge bg-secondary">{{ member.member_id }}</span></td>
+                            <td>{{ member.full_name() }}</td>
+                            <td>{{ member.ministry.name if member.ministry else '-' }}</td>
+                            <td><span class="badge bg-success">Present</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center text-muted py-4">No active members found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save Attendance</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

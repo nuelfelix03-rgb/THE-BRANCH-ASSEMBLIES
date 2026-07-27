@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Member Report - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-people"></i> Member Report</h4>
+    <div>
+        <a href="{{ url_for('reports.export_members_csv') }}" class="btn btn-success btn-sm me-2">
+            <i class="bi bi-download"></i> Export CSV
+        </a>
+        <a href="{{ url_for('reports.index') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card dashboard-card h-100">
+            <div class="card-body text-center">
+                <div class="stat-value text-primary">{{ total }}</div>
+                <div class="stat-label">Total Members</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card dashboard-card h-100">
+            <div class="card-body text-center">
+                <div class="stat-value text-success">{{ active }}</div>
+                <div class="stat-label">Active Members</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card dashboard-card h-100">
+            <div class="card-body text-center">
+                <div class="stat-value text-info">{{ new_this_month }}</div>
+                <div class="stat-label">New This Month</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-building"></i> Members by Ministry</div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="ministryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-gender-ambiguous"></i> Members by Gender</div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+{% if by_ministry %}
+new Chart(document.getElementById('ministryChart'), {
+    type: 'bar',
+    data: {
+        labels: [{% for name, count in by_ministry %}'{{ name or "Unassigned" }}',{% endfor %}],
+        datasets: [{
+            label: 'Members',
+            data: [{% for name, count in by_ministry %}{{ count }},{% endfor %}],
+            backgroundColor: '#3498db'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+{% endif %}
+
+{% if by_gender %}
+new Chart(document.getElementById('genderChart'), {
+    type: 'pie',
+    data: {
+        labels: [{% for gender, count in by_gender %}'{{ gender or "Not specified" }}',{% endfor %}],
+        datasets: [{
+            data: [{% for gender, count in by_gender %}{{ count }},{% endfor %}],
+            backgroundColor: ['#3498db', '#e74c3c', '#95a5a6']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

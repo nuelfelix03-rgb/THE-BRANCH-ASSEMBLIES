@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Church Information - Church Management System{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-info-circle"></i> Church Information</h4>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-2">
+            <div class="col-md-5">
+                <input type="text" name="q" class="form-control" placeholder="Search..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-4">
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% for info in infos %}
+<div class="card mb-4 church-info-card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge bg-primary">{{ info.category }}</span>
+            <small class="text-muted">Updated {{ info.updated_at.strftime('%b %d, %Y') }}</small>
+        </div>
+        <h5 class="card-title mb-3">{{ info.title }}</h5>
+        <div class="church-info-content">{{ info.content | replace('\n', '<br>') | safe }}</div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-info-circle fs-1 text-muted"></i>
+        <p class="mt-3 text-muted">No church information available.</p>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+.church-info-card { border-left: 4px solid var(--fire); }
+.church-info-content { white-space: pre-wrap; line-height: 1.7; color: var(--text-main); }
+.church-info-content ul, .church-info-content ol { padding-left: 1.5rem; }
+</style>
+{% endblock %}
