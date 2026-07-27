@@ -1,117 +1,291 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Church Management System{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <h4 class="mb-0"><i class="bi bi-{{ 'plus-lg' if title == 'Add Member' else 'pencil' }}"></i> {{ title }}</h4>
     <a href="{{ url_for('members.list_members') }}" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left"></i> Back to Members
     </a>
 </div>
 
-<div class="card">
-    <div class="card-body">
-        <form method="POST" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
+<form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+    {{ form.hidden_tag() }}
 
-            <h5 class="mb-3 text-primary"><i class="bi bi-person-badge"></i> Personal Information</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    {{ form.first_name.label(class="form-label") }}
-                    {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else "")) }}
-                    {% for error in form.first_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+    <!-- ===== SECTION 1: PERSONAL INFORMATION ===== -->
+    <div class="card mb-4">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="bi bi-person-badge fs-5"></i>
+            <span class="fw-semibold">Personal Information</span>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else ""), placeholder="Full Name") }}
+                        {{ form.full_name.label }}
+                        {% for e in form.full_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    {{ form.middle_name.label(class="form-label") }}
-                    {{ form.middle_name(class="form-control") }}
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.phone_number(class="form-control" + (" is-invalid" if form.phone_number.errors else ""), placeholder="Phone Number", type="tel") }}
+                        {{ form.phone_number.label }}
+                        {% for e in form.phone_number.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    {{ form.last_name.label(class="form-label") }}
-                    {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else "")) }}
-                    {% for error in form.last_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="Email Address") }}
+                        {{ form.email.label }}
+                        {% for e in form.email.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    {{ form.gender.label(class="form-label") }}
-                    {{ form.gender(class="form-select") }}
+                <div class="col-12">
+                    <div class="form-floating">
+                        {{ form.residential_address(class="form-control" + (" is-invalid" if form.residential_address.errors else ""), placeholder="Home Address", style="min-height:80px;") }}
+                        {{ form.residential_address.label }}
+                        {% for e in form.residential_address.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    {{ form.date_of_birth.label(class="form-label") }}
-                    {{ form.date_of_birth(class="form-control", type="date") }}
+                <div class="col-md-4 col-lg-3">
+                    <div class="form-floating">
+                        {{ form.date_of_birth(class="form-control" + (" is-invalid" if form.date_of_birth.errors else ""), placeholder="Date of Birth", type="date") }}
+                        {{ form.date_of_birth.label }}
+                        {% for e in form.date_of_birth.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    {{ form.marital_status.label(class="form-label") }}
-                    {{ form.marital_status(class="form-select") }}
+                <div class="col-md-4 col-lg-3">
+                    <div class="form-floating">
+                        {{ form.gender(class="form-select" + (" is-invalid" if form.gender.errors else "")) }}
+                        {{ form.gender.label }}
+                        {% for e in form.gender.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    {{ form.date_joined.label(class="form-label") }}
-                    {{ form.date_joined(class="form-control", type="date") }}
+                <div class="col-md-4 col-lg-3">
+                    <div class="form-floating">
+                        {{ form.marital_status(class="form-select" + (" is-invalid" if form.marital_status.errors else "")) }}
+                        {{ form.marital_status.label }}
+                        {% for e in form.marital_status.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="form-floating">
+                        {{ form.profession(class="form-control" + (" is-invalid" if form.profession.errors else ""), placeholder="Profession") }}
+                        {{ form.profession.label }}
+                        {% for e in form.profession.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
                 </div>
             </div>
-
-            <h5 class="mb-3 text-primary"><i class="bi bi-telephone"></i> Contact Information</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    {{ form.phone_number.label(class="form-label") }}
-                    {{ form.phone_number(class="form-control") }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.email.label(class="form-label") }}
-                    {{ form.email(class="form-control") }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.residential_address.label(class="form-label") }}
-                    {{ form.residential_address(class="form-control", rows=2) }}
-                </div>
-            </div>
-
-            <h5 class="mb-3 text-primary"><i class="bi bi-building"></i> Church Information</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    {{ form.ministry_id.label(class="form-label") }}
-                    {{ form.ministry_id(class="form-select") }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.baptism_status.label(class="form-label") }}
-                    {{ form.baptism_status(class="form-select") }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.membership_status.label(class="form-label") }}
-                    {{ form.membership_status(class="form-select") }}
-                </div>
-            </div>
-
-            <h5 class="mb-3 text-primary"><i class="bi bi-telephone-forward"></i> Emergency Contact</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    {{ form.emergency_contact_name.label(class="form-label") }}
-                    {{ form.emergency_contact_name(class="form-control") }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.emergency_contact_relationship.label(class="form-label") }}
-                    {{ form.emergency_contact_relationship(class="form-control") }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.emergency_contact_phone.label(class="form-label") }}
-                    {{ form.emergency_contact_phone(class="form-control") }}
-                </div>
-            </div>
-
-            <h5 class="mb-3 text-primary"><i class="bi bi-image"></i> Additional</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    {{ form.profile_picture.label(class="form-label") }}
-                    {{ form.profile_picture(class="form-control") }}
-                </div>
-                <div class="col-md-6">
-                    {{ form.notes.label(class="form-label") }}
-                    {{ form.notes(class="form-control", rows=3) }}
-                </div>
-            </div>
-
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="{{ url_for('members.list_members') }}" class="btn btn-secondary">Cancel</a>
-                {{ form.submit(class="btn btn-primary") }}
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+
+    <!-- ===== SECTION 2: ACADEMIC INFORMATION ===== -->
+    <div class="card mb-4">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="bi bi-mortarboard fs-5"></i>
+            <span class="fw-semibold">Academic Information</span>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.is_student(class="form-select" + (" is-invalid" if form.is_student.errors else ""), id="isStudent") }}
+                        {{ form.is_student.label }}
+                        {% for e in form.is_student.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="studentFields" class="row g-3 mt-2" style="display:none;">
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.school(class="form-control" + (" is-invalid" if form.school.errors else ""), placeholder="School") }}
+                        {{ form.school.label }}
+                        {% for e in form.school.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.faculty(class="form-control" + (" is-invalid" if form.faculty.errors else ""), placeholder="Faculty") }}
+                        {{ form.faculty.label }}
+                        {% for e in form.faculty.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.department(class="form-control" + (" is-invalid" if form.department.errors else ""), placeholder="Department") }}
+                        {{ form.department.label }}
+                        {% for e in form.department.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                    <div class="form-floating">
+                        {{ form.level(class="form-select" + (" is-invalid" if form.level.errors else ""), id="studentLevel") }}
+                        {{ form.level.label }}
+                        {% for e in form.level.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                    <div class="form-floating">
+                        {{ form.accommodation(class="form-select" + (" is-invalid" if form.accommodation.errors else ""), id="accommodation") }}
+                        {{ form.accommodation.label }}
+                        {% for e in form.accommodation.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="hostelFields" class="row g-3 mt-2" style="display:none;">
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.hostel_name(class="form-control" + (" is-invalid" if form.hostel_name.errors else ""), placeholder="Hostel Name") }}
+                        {{ form.hostel_name.label }}
+                        {% for e in form.hostel_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.room_number(class="form-control" + (" is-invalid" if form.room_number.errors else ""), placeholder="Room Number") }}
+                        {{ form.room_number.label }}
+                        {% for e in form.room_number.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SECTION 3: MEMBERSHIP DETAILS ===== -->
+    <div class="card mb-4">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="bi bi-journal-text fs-5"></i>
+            <span class="fw-semibold">Membership Details</span>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.previous_church(class="form-control" + (" is-invalid" if form.previous_church.errors else ""), placeholder="Previous Church") }}
+                        {{ form.previous_church.label }}
+                        {% for e in form.previous_church.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.how_heard(class="form-select" + (" is-invalid" if form.how_heard.errors else ""), id="howHeard") }}
+                        {{ form.how_heard.label }}
+                        {% for e in form.how_heard.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="friendNameField" class="row g-3 mt-2" style="display:none;">
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.friend_name(class="form-control" + (" is-invalid" if form.friend_name.errors else ""), placeholder="Friend's Name") }}
+                        {{ form.friend_name.label }}
+                        {% for e in form.friend_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="otherSourceField" class="row g-3 mt-2" style="display:none;">
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.other_source(class="form-control" + (" is-invalid" if form.other_source.errors else ""), placeholder="Please Specify") }}
+                        {{ form.other_source.label }}
+                        {% for e in form.other_source.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-3">
+            <h6 class="fw-semibold mb-3"><i class="bi bi-share"></i> Social Media</h6>
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.preferred_social_platform(class="form-select" + (" is-invalid" if form.preferred_social_platform.errors else "")) }}
+                        {{ form.preferred_social_platform.label }}
+                        {% for e in form.preferred_social_platform.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-floating">
+                        {{ form.social_handle(class="form-control" + (" is-invalid" if form.social_handle.errors else ""), placeholder="@username") }}
+                        {{ form.social_handle.label }}
+                        {% for e in form.social_handle.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== BUTTONS ===== -->
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+        <button type="reset" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset Form
+        </button>
+        <a href="{{ url_for('members.list_members') }}" class="btn btn-secondary">
+            <i class="bi bi-x-circle"></i> Cancel
+        </a>
+        {{ form.submit(class="btn btn-primary px-4") }}
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const isStudent = document.getElementById('isStudent');
+    const studentFields = document.getElementById('studentFields');
+    const hostelFields = document.getElementById('hostelFields');
+    const accommodation = document.getElementById('accommodation');
+    const howHeard = document.getElementById('howHeard');
+    const friendField = document.getElementById('friendNameField');
+    const otherField = document.getElementById('otherSourceField');
+    const friendInput = friendField ? friendField.querySelector('input, select') : null;
+    const otherInput = otherField ? otherField.querySelector('input, select') : null;
+    const hostelInputs = hostelFields ? hostelFields.querySelectorAll('input, select') : [];
+    const studentInputs = studentFields ? studentFields.querySelectorAll('input, select') : [];
+
+    function toggleStudentFields() {
+        if (!studentFields || !isStudent) return;
+        const show = isStudent.value === 'Yes';
+        studentFields.style.display = show ? 'flex' : 'none';
+        studentInputs.forEach(function(el) { el.required = show; });
+        if (!show) {
+            if (hostelFields) hostelFields.style.display = 'none';
+            hostelInputs.forEach(function(el) { el.required = false; });
+        } else {
+            toggleAccommodation();
+        }
+    }
+
+    function toggleAccommodation() {
+        if (!hostelFields || !accommodation) return;
+        const show = accommodation.value === 'Hostel';
+        hostelFields.style.display = show ? 'flex' : 'none';
+        hostelInputs.forEach(function(el) { el.required = show; });
+    }
+
+    function toggleHeardFields() {
+        if (!howHeard) return;
+        const val = howHeard.value;
+        if (friendField) friendField.style.display = val === 'Friend' ? 'flex' : 'none';
+        if (otherField) otherField.style.display = val === 'Other' ? 'flex' : 'none';
+        if (friendInput) friendInput.required = val === 'Friend';
+        if (otherInput) otherInput.required = val === 'Other';
+    }
+
+    if (isStudent) {
+        isStudent.addEventListener('change', toggleStudentFields);
+        toggleStudentFields();
+    }
+    if (accommodation) {
+        accommodation.addEventListener('change', toggleAccommodation);
+    }
+    if (howHeard) {
+        howHeard.addEventListener('change', toggleHeardFields);
+        toggleHeardFields();
+    }
+})();
+</script>
 {% endblock %}

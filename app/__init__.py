@@ -85,6 +85,21 @@ def create_app(config_class=Config):
         from app import models
         db.create_all()
 
+        # Migrate existing tables with new columns (SQLite doesn't auto-alter)
+        from sqlalchemy import inspect, text as sa_text
+        try:
+            inspector = inspect(db.engine)
+            table_names = inspector.get_table_names()
+            if 'announcements' in table_names:
+                existing_cols = {c['name'] for c in inspector.get_columns('announcements')}
+                if 'image' not in existing_cols:
+                    db.session.execute(sa_text('ALTER TABLE announcements ADD COLUMN image VARCHAR(255)'))
+                if 'author_name' not in existing_cols:
+                    db.session.execute(sa_text('ALTER TABLE announcements ADD COLUMN author_name VARCHAR(100)'))
+                db.session.commit()
+        except Exception:
+            db.session.rollback()
+
         from app.utils.seed import seed_data
         seed_data()
 

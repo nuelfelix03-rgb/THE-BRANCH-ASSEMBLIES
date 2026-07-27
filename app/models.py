@@ -72,11 +72,30 @@ class Member(db.Model):
     emergency_contact_phone = db.Column(db.String(20))
     profile_picture = db.Column(db.String(255))
     notes = db.Column(db.Text)
+
+    # --- New Fields --- #
+    profession = db.Column(db.String(100))
+    is_student = db.Column(db.String(10))
+    school = db.Column(db.String(200))
+    faculty = db.Column(db.String(200))
+    department = db.Column(db.String(200))
+    level = db.Column(db.String(50))
+    accommodation = db.Column(db.String(50))
+    hostel_name = db.Column(db.String(200))
+    room_number = db.Column(db.String(50))
+    previous_church = db.Column(db.String(200))
+    how_heard = db.Column(db.String(100))
+    friend_name = db.Column(db.String(100))
+    other_source = db.Column(db.String(200))
+    preferred_social_platform = db.Column(db.String(50))
+    social_handle = db.Column(db.String(100))
+    # --- End New Fields --- #
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def full_name(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.first_name} {self.last_name}'.strip()
 
     def age(self):
         if self.date_of_birth:
@@ -171,6 +190,8 @@ class Announcement(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     status = db.Column(db.String(20), default='Draft')
     scheduled_date = db.Column(db.DateTime)
+    image = db.Column(db.String(255))
+    author_name = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

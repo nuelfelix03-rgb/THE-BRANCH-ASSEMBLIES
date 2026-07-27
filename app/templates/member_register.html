@@ -1,95 +1,220 @@
 {% extends "base.html" %}
-{% block title %}Complete Your Profile - Church Management System{% endblock %}
+{% block title %}{{ 'Edit Profile' if edit_mode else 'Register Profile' }} - Church Management System{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0"><i class="bi bi-person-plus"></i> Complete Your Profile</h4>
+    <h4 class="mb-0 fw-bold"><i class="bi bi-person-badge me-2"></i>{{ 'Edit Your Profile' if edit_mode else 'Complete Your Profile' }}</h4>
 </div>
 
-<div class="card">
-    <div class="card-body">
-        <p class="text-muted">Please fill in your details to complete your member registration.</p>
-        <hr>
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
         <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
-
-            <h5 class="mb-3 text-primary"><i class="bi bi-person-badge"></i> Personal Information</h5>
-            <div class="row g-3 mb-4">
+            <div class="row g-4">
+                <div class="col-12">
+                    <h6 class="fw-bold text-primary border-bottom pb-2"><i class="bi bi-info-circle me-2"></i>Personal Information</h6>
+                </div>
                 <div class="col-md-4">
-                    {{ form.first_name.label(class="form-label") }}
+                    <label class="form-label fw-medium">{{ form.first_name.label.text }}</label>
                     {{ form.first_name(class="form-control" + (" is-invalid" if form.first_name.errors else "")) }}
                     {% for error in form.first_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
                 </div>
                 <div class="col-md-4">
-                    {{ form.middle_name.label(class="form-label") }}
-                    {{ form.middle_name(class="form-control") }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.last_name.label(class="form-label") }}
+                    <label class="form-label fw-medium">{{ form.last_name.label.text }}</label>
                     {{ form.last_name(class="form-control" + (" is-invalid" if form.last_name.errors else "")) }}
                     {% for error in form.last_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
                 </div>
-                <div class="col-md-3">
-                    {{ form.gender.label(class="form-label") }}
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">{{ form.middle_name.label.text }}</label>
+                    {{ form.middle_name(class="form-control") }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">{{ form.gender.label.text }}</label>
                     {{ form.gender(class="form-select") }}
                 </div>
-                <div class="col-md-3">
-                    {{ form.date_of_birth.label(class="form-label") }}
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">{{ form.date_of_birth.label.text }}</label>
                     {{ form.date_of_birth(class="form-control", type="date") }}
                 </div>
-                <div class="col-md-3">
-                    {{ form.marital_status.label(class="form-label") }}
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">{{ form.marital_status.label.text }}</label>
                     {{ form.marital_status(class="form-select") }}
                 </div>
-                <div class="col-md-3">
-                    {{ form.baptism_status.label(class="form-label") }}
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.phone_number.label.text }}</label>
+                    {{ form.phone_number(class="form-control", placeholder="+1234567890") }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.baptism_status.label.text }}</label>
                     {{ form.baptism_status(class="form-select") }}
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Profile Picture</label>
-                    <input type="file" name="profile_picture" class="form-control" accept="image/*">
-                </div>
-            </div>
-
-            <h5 class="mb-3 text-primary"><i class="bi bi-telephone"></i> Contact Information</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    {{ form.phone_number.label(class="form-label") }}
-                    {{ form.phone_number(class="form-control") }}
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" value="{{ current_user.email }}" disabled>
-                        <small class="text-muted">Your account email</small>
-                    </div>
-                </div>
                 <div class="col-12">
-                    {{ form.residential_address.label(class="form-label") }}
+                    <label class="form-label fw-medium">{{ form.residential_address.label.text }}</label>
                     {{ form.residential_address(class="form-control", rows=2) }}
                 </div>
+
+                <div class="col-12 mt-3">
+                    <h6 class="fw-bold text-primary border-bottom pb-2"><i class="bi bi-briefcase me-2"></i>Occupation & Education</h6>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.profession.label.text }}</label>
+                    {{ form.profession(class="form-control", placeholder="e.g. Teacher, Engineer") }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.is_student.label.text }}</label>
+                    {{ form.is_student(class="form-select", id="is_student") }}
+                </div>
+                <div class="student-fields" style="display:none;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.school.label.text }}</label>
+                            {{ form.school(class="form-control", placeholder="School/Institution name") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.faculty.label.text }}</label>
+                            {{ form.faculty(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.department.label.text }}</label>
+                            {{ form.department(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.level.label.text }}</label>
+                            {{ form.level(class="form-control", placeholder="e.g. 200 Level") }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <h6 class="fw-bold text-primary border-bottom pb-2"><i class="bi bi-house-door me-2"></i>Accommodation</h6>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.accommodation.label.text }}</label>
+                    {{ form.accommodation(class="form-select", id="accommodation") }}
+                </div>
+                <div class="hostel-fields" style="display:none;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.hostel_name.label.text }}</label>
+                            {{ form.hostel_name(class="form-control", placeholder="Hostel name") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ form.room_number.label.text }}</label>
+                            {{ form.room_number(class="form-control", placeholder="Room number") }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <h6 class="fw-bold text-primary border-bottom pb-2"><i class="bi bi-heart me-2"></i>Church Background</h6>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.previous_church.label.text }}</label>
+                    {{ form.previous_church(class="form-control", placeholder="Previous church attended") }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.how_heard.label.text }}</label>
+                    {{ form.how_heard(class="form-select", id="how_heard") }}
+                </div>
+                <div class="friend-field" style="display:none;">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">{{ form.friend_name.label.text }}</label>
+                        {{ form.friend_name(class="form-control", placeholder="Friend's name") }}
+                    </div>
+                </div>
+                <div class="other-field" style="display:none;">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">{{ form.other_source.label.text }}</label>
+                        {{ form.other_source(class="form-control", placeholder="Please specify") }}
+                    </div>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <h6 class="fw-bold text-primary border-bottom pb-2"><i class="bi bi-share me-2"></i>Social Media</h6>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.preferred_social_platform.label.text }}</label>
+                    {{ form.preferred_social_platform(class="form-control", placeholder="e.g. Instagram, WhatsApp") }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.social_handle.label.text }}</label>
+                    {{ form.social_handle(class="form-control", placeholder="@yourhandle") }}
+                </div>
+
+                <div class="col-12 mt-3">
+                    <h6 class="fw-bold text-primary border-bottom pb-2"><i class="bi bi-shield-plus me-2"></i>Emergency Contact</h6>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">{{ form.emergency_contact_name.label.text }}</label>
+                    {{ form.emergency_contact_name(class="form-control", placeholder="Full name") }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">{{ form.emergency_contact_relationship.label.text }}</label>
+                    {{ form.emergency_contact_relationship(class="form-control", placeholder="e.g. Spouse") }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">{{ form.emergency_contact_phone.label.text }}</label>
+                    {{ form.emergency_contact_phone(class="form-control", placeholder="Phone number") }}
+                </div>
+
+                <div class="col-12 mt-3">
+                    <h6 class="fw-bold text-primary border-bottom pb-2"><i class="bi bi-camera me-2"></i>Profile Photo</h6>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">{{ form.profile_picture.label.text }}</label>
+                    {{ form.profile_picture(class="form-control") }}
+                    <small class="text-muted">Allowed: JPG, PNG, WebP. Max 300x300px.</small>
+                    {% if edit_mode and member and member.profile_picture %}
+                    <div class="mt-2">
+                        <img src="{{ url_for('static', filename='uploads/' + member.profile_picture) }}" alt="Profile" class="rounded-circle border" style="width:80px;height:80px;object-fit:cover;">
+                        <a href="{{ url_for('main.remove_my_photo') }}" class="btn btn-sm btn-outline-danger ms-3" onclick="return confirm('Remove photo?')"><i class="bi bi-x-circle me-1"></i>Remove</a>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
 
-            <h5 class="mb-3 text-primary"><i class="bi bi-telephone-forward"></i> Emergency Contact</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    {{ form.emergency_contact_name.label(class="form-label") }}
-                    {{ form.emergency_contact_name(class="form-control") }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.emergency_contact_relationship.label(class="form-label") }}
-                    {{ form.emergency_contact_relationship(class="form-control") }}
-                </div>
-                <div class="col-md-4">
-                    {{ form.emergency_contact_phone.label(class="form-label") }}
-                    {{ form.emergency_contact_phone(class="form-control") }}
-                </div>
-            </div>
-
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Skip for Now</a>
-                {{ form.submit(class="btn btn-primary") }}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-light border">Cancel</a>
+                {{ form.submit(class="btn btn-primary px-4") }}
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    function toggleFields(selectId, targetClass, showValue) {
+        var sel = document.getElementById(selectId);
+        var fields = document.querySelectorAll('.' + targetClass + ' > .row');
+        if (!sel || !fields.length) return;
+        function update() {
+            if (sel.value === showValue) {
+                fields.forEach(function(el){ el.style.display = ''; });
+                document.querySelector('.' + targetClass).style.display = '';
+            } else {
+                fields.forEach(function(el){ el.style.display = 'none'; });
+                document.querySelector('.' + targetClass).style.display = 'none';
+            }
+        }
+        sel.addEventListener('change', update);
+        update();
+    }
+    toggleFields('is_student', 'student-fields', 'yes');
+    toggleFields('accommodation', 'hostel-fields', 'Hostel');
+    function toggleHowHeard() {
+        var sel = document.getElementById('how_heard');
+        var friend = document.querySelector('.friend-field');
+        var other = document.querySelector('.other-field');
+        if (!sel || !friend || !other) return;
+        function update() {
+            friend.style.display = sel.value === 'Friend' ? '' : 'none';
+            other.style.display = sel.value === 'Other' ? '' : 'none';
+        }
+        sel.addEventListener('change', update);
+        update();
+    }
+    toggleHowHeard();
+});
+</script>
 {% endblock %}

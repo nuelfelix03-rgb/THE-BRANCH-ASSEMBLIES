@@ -1,10 +1,12 @@
+import os
 from datetime import datetime
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from app import db
 from app.models import Announcement, AnnouncementRead, Notification, User
 from app.forms import AnnouncementForm
 from app.utils.decorators import admin_required
+from app.utils.helpers import save_announcement_image, delete_file
 
 announcements_bp = Blueprint('announcements', __name__, url_prefix='/announcements')
 
@@ -41,12 +43,18 @@ def list_announcements():
 def add_announcement():
     form = AnnouncementForm()
     if form.validate_on_submit():
+        image_filename = None
+        if form.image.data:
+            image_filename = save_announcement_image(form.image.data)
+
         announcement = Announcement(
             title=form.title.data,
             content=form.content.data,
             category=form.category.data,
             author_id=current_user.id,
             status=form.status.data,
+            image=image_filename,
+            author_name=form.author_name.data,
             scheduled_date=form.scheduled_date.data
         )
         db.session.add(announcement)
@@ -80,7 +88,14 @@ def edit_announcement(id):
         announcement.content = form.content.data
         announcement.category = form.category.data
         announcement.status = form.status.data
+        announcement.author_name = form.author_name.data
         announcement.scheduled_date = form.scheduled_date.data
+
+        if form.image.data:
+            if announcement.image:
+                delete_file(announcement.image, 'announcement_images')
+            announcement.image = save_announcement_image(form.image.data)
+
         db.session.commit()
 
         if announcement.status == 'Published':
@@ -124,6 +139,8 @@ def view_announcement(id):
 @admin_required
 def delete_announcement(id):
     announcement = Announcement.query.get_or_404(id)
+    if announcement.image:
+        delete_file(announcement.image, 'announcement_images')
     db.session.delete(announcement)
     db.session.commit()
     flash('Announcement deleted.', 'info')

@@ -2,65 +2,114 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ church_settings.church_name or 'Church Management System' }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="theme-color" content="#C8102E">
+    <title>{{ church_settings.church_name or 'Zoé Church Management' }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <meta name="theme-color" content="#d32f2f">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+        :root {
+            --brand-red: #C8102E;
+            --brand-orange: #F45A1D;
+            --brand-gold: #FF9F1C;
+            --brand-grad: linear-gradient(135deg, #C8102E, #F45A1D);
+        }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif; }
+        .navbar { background: #0a0a0a !important; border-bottom: 1px solid rgba(200,16,46,0.15); }
         .hero {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #140000 40%, #1a0500 70%, #0a0a0a 100%);
             color: white;
             padding: 80px 0;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(200,16,46,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-logo { width: 72px; height: 72px; margin-bottom: 16px; }
+        .hero h1 {
+            background: linear-gradient(135deg, #C8102E, #F45A1D, #FF9F1C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
         }
         .feature-card {
             border: none;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            transition: transform 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
             height: 100%;
+            position: relative;
+            overflow: hidden;
         }
-        .feature-card:hover { transform: translateY(-5px); }
-        .feature-icon { font-size: 2.5rem; color: #3498db; }
-        footer { background: #2c3e50; color: white; padding: 30px 0; }
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: var(--brand-grad);
+        }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+        .feature-icon { font-size: 2.5rem; background: var(--brand-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        footer { background: #0a0a0a; color: rgba(255,255,255,0.5); padding: 30px 0; border-top: 1px solid rgba(200,16,46,0.1); }
+        .btn-brand {
+            background: var(--brand-grad);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-brand:hover { box-shadow: 0 0 18px rgba(200,16,46,0.4); transform: translateY(-1px); color: #fff; }
+        .btn-outline-brand {
+            color: var(--brand-red);
+            border-color: var(--brand-red);
+        }
+        .btn-outline-brand:hover {
+            background: var(--brand-grad);
+            border-color: transparent;
+            color: #fff;
+        }
         @media (max-width: 575.98px) {
             .hero { padding: 50px 0; }
             .hero h1 { font-size: 1.75rem; }
             .feature-icon { font-size: 2rem; }
-            .navbar .btn { font-size: 0.85rem; padding: 0.3rem 0.6rem; }
-        }
-        @media (max-width: 374.98px) {
-            .hero h1 { font-size: 1.4rem; }
-            .navbar-brand { font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #2c3e50;">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}"><i class="bi bi-church me-2"></i>{{ church_settings.church_name or 'CMS' }}</a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav" aria-controls="landingNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
+                <img src="{{ url_for('static', filename='images/church-logo.svg') }}" alt="" style="height:32px;width:32px;" class="me-2">
+                {{ church_settings.church_name or 'ZOÉ CHURCH' }}
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="landingNav">
                 <div class="ms-auto d-flex gap-2 mt-2 mt-lg-0">
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light flex-fill"><i class="bi bi-box-arrow-in-right"></i> Login</a>
-                    <a href="{{ url_for('auth.register') }}" class="btn btn-light flex-fill"><i class="bi bi-person-plus"></i> Register</a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-brand flex-fill"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-brand flex-fill"><i class="bi bi-person-plus me-1"></i> Register</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <section class="hero text-center">
-        <div class="container">
-            <h1 class="display-4 fw-bold mb-3"><i class="bi bi-church"></i> {{ church_settings.church_name or 'Church Management System' }}</h1>
+        <div class="container position-relative">
+            <img src="{{ url_for('static', filename='images/church-logo.svg') }}" alt="" class="hero-logo">
+            <h1 class="display-4 fw-bold mb-3">{{ church_settings.church_name or 'Zoé Church' }}</h1>
             {% if church_settings.welcome_message %}
-            <p class="lead mb-4">{{ church_settings.welcome_message }}</p>
+            <p class="lead mb-4" style="color:rgba(255,255,255,0.7);">{{ church_settings.welcome_message }}</p>
             {% endif %}
-            <p class="lead mb-4">Manage your church members, attendance, ministries, events, and more — all in one place.</p>
-            <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-4">Get Started</a>
+            <p class="lead mb-4" style="color:rgba(255,255,255,0.6);">Church management made simple — members, attendance, ministries, and more.</p>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-brand btn-lg px-5">Get Started</a>
         </div>
     </section>
 
@@ -94,7 +143,7 @@
 
     <footer class="text-center">
         <div class="container">
-            <p class="mb-0">&copy; {{ now().year }} {{ church_settings.church_name or 'Church Management System' }}. All rights reserved.</p>
+            <p class="mb-0">&copy; {{ now().year if now else '2026' }} {{ church_settings.church_name or 'Zoé Church' }}. All rights reserved.</p>
         </div>
     </footer>
 

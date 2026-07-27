@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app import db
 from app.models import Member, Attendance, Ministry, Event, Announcement, User, ChurchInformation
 from app.utils.decorators import admin_required
-from app.utils.helpers import generate_member_id, save_profile_picture
+from app.utils.helpers import generate_member_id, save_profile_picture, delete_file
 from sqlalchemy import func
 
 main_bp = Blueprint('main', __name__)
@@ -144,7 +144,22 @@ def register_profile():
             membership_status='Active',
             emergency_contact_name=form.emergency_contact_name.data,
             emergency_contact_relationship=form.emergency_contact_relationship.data,
-            emergency_contact_phone=form.emergency_contact_phone.data
+            emergency_contact_phone=form.emergency_contact_phone.data,
+            profession=form.profession.data,
+            is_student=form.is_student.data,
+            school=form.school.data,
+            faculty=form.faculty.data,
+            department=form.department.data,
+            level=form.level.data,
+            accommodation=form.accommodation.data,
+            hostel_name=form.hostel_name.data,
+            room_number=form.room_number.data,
+            previous_church=form.previous_church.data,
+            how_heard=form.how_heard.data,
+            friend_name=form.friend_name.data,
+            other_source=form.other_source.data,
+            preferred_social_platform=form.preferred_social_platform.data,
+            social_handle=form.social_handle.data
         )
         picture = request.files.get('profile_picture')
         if picture and picture.filename:
@@ -155,6 +170,78 @@ def register_profile():
         flash('Your profile has been created! Welcome to the church.', 'success')
         return redirect(url_for('main.dashboard'))
     return render_template('member_register.html', form=form)
+
+
+@main_bp.route('/edit-profile', methods=['GET', 'POST'])
+@login_required
+def edit_my_member_profile():
+    if current_user.role != 'member':
+        flash('Only members can edit their profile.', 'warning')
+        return redirect(url_for('main.dashboard'))
+
+    member = Member.query.filter_by(email=current_user.email).first()
+    if not member:
+        flash('Please register your profile first.', 'warning')
+        return redirect(url_for('main.register_profile'))
+
+    from app.forms import MemberSelfRegistrationForm
+    form = MemberSelfRegistrationForm(obj=member)
+    if form.validate_on_submit():
+        member.first_name = form.first_name.data
+        member.last_name = form.last_name.data
+        member.middle_name = form.middle_name.data
+        member.gender = form.gender.data
+        member.date_of_birth = form.date_of_birth.data
+        member.marital_status = form.marital_status.data
+        member.phone_number = form.phone_number.data
+        member.residential_address = form.residential_address.data
+        member.baptism_status = form.baptism_status.data
+        member.emergency_contact_name = form.emergency_contact_name.data
+        member.emergency_contact_relationship = form.emergency_contact_relationship.data
+        member.emergency_contact_phone = form.emergency_contact_phone.data
+        member.profession = form.profession.data
+        member.is_student = form.is_student.data
+        member.school = form.school.data
+        member.faculty = form.faculty.data
+        member.department = form.department.data
+        member.level = form.level.data
+        member.accommodation = form.accommodation.data
+        member.hostel_name = form.hostel_name.data
+        member.room_number = form.room_number.data
+        member.previous_church = form.previous_church.data
+        member.how_heard = form.how_heard.data
+        member.friend_name = form.friend_name.data
+        member.other_source = form.other_source.data
+        member.preferred_social_platform = form.preferred_social_platform.data
+        member.social_handle = form.social_handle.data
+
+        picture = request.files.get('profile_picture')
+        if picture and picture.filename:
+            member.profile_picture = save_profile_picture(picture)
+
+        db.session.commit()
+        flash('Your profile has been updated!', 'success')
+        return redirect(url_for('main.my_profile'))
+    return render_template('member_register.html', form=form, edit_mode=True, member=member)
+
+
+@main_bp.route('/remove-photo')
+@login_required
+def remove_my_photo():
+    if current_user.role == 'member':
+        member = Member.query.filter_by(email=current_user.email).first()
+        if member and member.profile_picture:
+            delete_file(member.profile_picture)
+            member.profile_picture = None
+            db.session.commit()
+            flash('Photo removed.', 'info')
+    else:
+        if current_user.profile_picture:
+            delete_file(current_user.profile_picture)
+            current_user.profile_picture = None
+            db.session.commit()
+            flash('Photo removed.', 'info')
+    return redirect(url_for('main.my_profile'))
 
 
 @main_bp.route('/user/<int:id>/profile')
@@ -184,8 +271,12 @@ def edit_my_photo():
         if current_user.role == 'member':
             member = Member.query.filter_by(email=current_user.email).first()
             if member:
+                if member.profile_picture:
+                    delete_file(member.profile_picture)
                 member.profile_picture = picture_file
         else:
+            if current_user.profile_picture:
+                delete_file(current_user.profile_picture)
             current_user.profile_picture = picture_file
         db.session.commit()
         flash('Profile picture updated!', 'success')

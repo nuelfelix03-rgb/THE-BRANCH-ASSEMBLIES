@@ -2,39 +2,53 @@
 {% block title %}{{ title }} - Church Management System{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0"><i class="bi bi-megaphone"></i> {{ title }}</h4>
-    <a href="{{ url_for('announcements.list_announcements') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+    <h4 class="mb-0 fw-bold"><i class="bi bi-megaphone me-2"></i>{{ title }}</h4>
+    <a href="{{ url_for('announcements.list_announcements') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> Back</a>
 </div>
-<div class="card">
-    <div class="card-body">
-        <form method="POST">
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <div class="row g-3">
                 <div class="col-md-8">
-                    {{ form.title.label(class="form-label") }}
-                    {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else "")) }}
+                    <label class="form-label fw-medium">{{ form.title.label.text }}</label>
+                    {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else ""), placeholder="Announcement title") }}
                     {% for error in form.title.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
                 </div>
                 <div class="col-md-4">
-                    {{ form.category.label(class="form-label") }}
+                    <label class="form-label fw-medium">{{ form.category.label.text }}</label>
                     {{ form.category(class="form-select") }}
                 </div>
                 <div class="col-12">
-                    {{ form.content.label(class="form-label") }}
-                    {{ form.content(class="form-control", rows=8) }}
+                    <label class="form-label fw-medium">{{ form.content.label.text }}</label>
+                    {{ form.content(class="form-control", rows=8, placeholder="Write your announcement content here...") }}
                 </div>
                 <div class="col-md-4">
-                    {{ form.status.label(class="form-label") }}
+                    <label class="form-label fw-medium">{{ form.status.label.text }}</label>
                     {{ form.status(class="form-select") }}
                 </div>
                 <div class="col-md-4">
-                    {{ form.scheduled_date.label(class="form-label") }}
-                    {{ form.scheduled_date(class="form-control") }}
+                    <label class="form-label fw-medium">{{ form.scheduled_date.label.text }}</label>
+                    {{ form.scheduled_date(class="form-control", placeholder="YYYY-MM-DD HH:MM") }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">{{ form.author_name.label.text }}</label>
+                    {{ form.author_name(class="form-control", placeholder="e.g. Pastor John") }}
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-medium">{{ form.image.label.text }}</label>
+                    {{ form.image(class="form-control") }}
+                    {% if announcement and announcement.image %}
+                    <div class="mt-2 d-flex align-items-center gap-3">
+                        <img src="{{ url_for('static', filename='announcement_images/' + announcement.image) }}" alt="Current image" class="rounded" style="max-height:80px;">
+                        <small class="text-muted">Current image</small>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <a href="{{ url_for('announcements.list_announcements') }}" class="btn btn-secondary">Cancel</a>
-                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('announcements.list_announcements') }}" class="btn btn-light border">Cancel</a>
+                {{ form.submit(class="btn btn-primary px-4") }}
             </div>
         </form>
     </div>

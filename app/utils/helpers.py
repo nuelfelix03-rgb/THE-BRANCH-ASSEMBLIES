@@ -21,6 +21,29 @@ def save_profile_picture(form_picture):
     return picture_filename
 
 
+def save_announcement_image(form_image):
+    random_filename = uuid.uuid4().hex
+    _, f_ext = os.path.splitext(form_image.filename)
+    image_filename = random_filename + f_ext
+    image_path = os.path.join(current_app.root_path, 'static', 'announcement_images', image_filename)
+
+    os.makedirs(os.path.dirname(image_path), exist_ok=True)
+
+    img = Image.open(form_image)
+    img.thumbnail((1200, 1200))
+    img.save(image_path)
+
+    return image_filename
+
+
+def delete_file(filename, subdir='uploads'):
+    if not filename:
+        return
+    path = os.path.join(current_app.root_path, 'static', subdir, filename)
+    if os.path.exists(path):
+        os.remove(path)
+
+
 def generate_member_id():
     import random
     year = date.today().year

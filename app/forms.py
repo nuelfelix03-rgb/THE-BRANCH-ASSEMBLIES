@@ -34,33 +34,70 @@ class RegistrationForm(FlaskForm):
 
 
 class MemberForm(FlaskForm):
-    first_name = StringField('First Name', validators=[DataRequired(), Length(max=100)])
-    last_name = StringField('Last Name', validators=[DataRequired(), Length(max=100)])
-    middle_name = StringField('Middle Name', validators=[Optional(), Length(max=100)])
-    gender = SelectField('Gender', choices=[('', 'Select Gender'), ('Male', 'Male'), ('Female', 'Female')])
-    date_of_birth = DateField('Date of Birth', format='%Y-%m-%d', validators=[Optional()])
+    # === Section 1: Personal Information ===
+    full_name = StringField('Full Name', validators=[DataRequired(), Length(max=200)])
+    phone_number = StringField('Phone Number', validators=[DataRequired(), Length(max=20)])
+    email = StringField('Email Address', validators=[Optional(), Email(), Length(max=120)])
+    residential_address = TextAreaField('Home Address', validators=[Optional()])
+    date_of_birth = DateField('Date of Birth', format='%Y-%m-%d', validators=[DataRequired()])
+    gender = SelectField('Gender', choices=[('', 'Select Gender'), ('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
     marital_status = SelectField('Marital Status', choices=[
-        ('Single', 'Single'), ('Married', ' Married'), ('Divorced', 'Divorced'),
-        ('Widowed', 'Widowed')
-    ])
-    phone_number = StringField('Phone Number', validators=[Optional(), Length(max=20)])
-    email = StringField('Email', validators=[Optional(), Email()])
-    residential_address = TextAreaField('Residential Address', validators=[Optional()])
-    date_joined = DateField('Date Joined', format='%Y-%m-%d', validators=[Optional()])
-    baptism_status = SelectField('Baptism Status', choices=[
-        ('Not Baptized', 'Not Baptized'), ('Baptized', 'Baptized'),
-        ('Pending', 'Pending')
-    ])
-    ministry_id = SelectField('Ministry/Department', coerce=int, validators=[Optional()])
-    membership_status = SelectField('Membership Status', choices=[
-        ('Active', 'Active'), ('Inactive', 'Inactive'), ('Transferred', 'Transferred'),
-        ('Removed', 'Removed')
-    ])
-    emergency_contact_name = StringField('Emergency Contact Name', validators=[Optional(), Length(max=100)])
-    emergency_contact_relationship = StringField('Relationship', validators=[Optional(), Length(max=50)])
-    emergency_contact_phone = StringField('Emergency Phone', validators=[Optional(), Length(max=20)])
-    profile_picture = FileField('Profile Picture', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'])])
-    notes = TextAreaField('Notes', validators=[Optional()])
+        ('', 'Select Marital Status'), ('Single', 'Single'), ('Married', 'Married'),
+        ('Engaged', 'Engaged'), ('Divorced', 'Divorced'), ('Widowed', 'Widowed')
+    ], validators=[DataRequired()])
+    profession = StringField('Profession / Occupation', validators=[DataRequired(), Length(max=100)])
+
+    # === Section 2: Student Information ===
+    is_student = SelectField('Are you a Student?', choices=[('', 'Select Option'), ('Yes', 'Yes'), ('No', 'No')], validators=[DataRequired()])
+    school = StringField('School', validators=[Optional(), Length(max=200)])
+    faculty = StringField('Faculty', validators=[Optional(), Length(max=200)])
+    department = StringField('Department', validators=[Optional(), Length(max=200)])
+    level = SelectField('Level', choices=[
+        ('', 'Select Level'), ('100', '100'), ('200', '200'), ('300', '300'),
+        ('400', '400'), ('500', '500'), ('Postgraduate', 'Postgraduate'), ('Other', 'Other')
+    ], validators=[Optional()])
+    accommodation = SelectField('Accommodation', choices=[
+        ('', 'Select Accommodation'), ('Hostel', 'Hostel'), ('Off Campus', 'Off Campus')
+    ], validators=[Optional()])
+    hostel_name = StringField('Hostel Name', validators=[Optional(), Length(max=200)])
+    room_number = StringField('Room Number', validators=[Optional(), Length(max=50)])
+
+    # === Section 3: Membership Details ===
+    previous_church = StringField('Previous Church', validators=[Optional(), Length(max=200)])
+    how_heard = SelectField('How did you hear about us?', choices=[
+        ('', 'Select Option'), ('Friend', 'Friend'), ('Family', 'Family'),
+        ('Facebook', 'Facebook'), ('Instagram', 'Instagram'), ('WhatsApp', 'WhatsApp'),
+        ('TikTok', 'TikTok'), ('X (Twitter)', 'X (Twitter)'), ('YouTube', 'YouTube'),
+        ('Church Outreach', 'Church Outreach'), ('Google Search', 'Google Search'),
+        ('Website', 'Website'), ('Flyer', 'Flyer'), ('Campus Evangelism', 'Campus Evangelism'),
+        ('Other', 'Other')
+    ], validators=[DataRequired()])
+    friend_name = StringField("Friend's Name", validators=[Optional(), Length(max=100)])
+    other_source = StringField('Please Specify', validators=[Optional(), Length(max=200)])
+
+    # === Social Media ===
+    preferred_social_platform = SelectField('Preferred Social Media Platform', choices=[
+        ('', 'Select Platform'), ('WhatsApp', 'WhatsApp'), ('Facebook', 'Facebook'),
+        ('Instagram', 'Instagram'), ('TikTok', 'TikTok'), ('X (Twitter)', 'X (Twitter)'),
+        ('Telegram', 'Telegram'), ('Snapchat', 'Snapchat'), ('LinkedIn', 'LinkedIn'),
+        ('Other', 'Other')
+    ], validators=[Optional()])
+    social_handle = StringField('Social Media Username / Handle', validators=[Optional(), Length(max=100)])
+
+    # === Hidden legacy fields for compatibility ===
+    first_name = HiddenField()
+    last_name = HiddenField()
+    middle_name = HiddenField()
+    baptism_status = HiddenField()
+    ministry_id = HiddenField()
+    membership_status = HiddenField()
+    emergency_contact_name = HiddenField()
+    emergency_contact_relationship = HiddenField()
+    emergency_contact_phone = HiddenField()
+    profile_picture = HiddenField()
+    notes = HiddenField()
+    date_joined = HiddenField()
+
     submit = SubmitField('Save Member')
 
     def __init__(self, *args, **kwargs):
@@ -113,6 +150,8 @@ class AnnouncementForm(FlaskForm):
     status = SelectField('Status', choices=[
         ('Draft', 'Draft'), ('Published', 'Published')
     ])
+    image = FileField('Image', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'webp'])])
+    author_name = StringField('Author (optional)', validators=[Optional(), Length(max=100)])
     scheduled_date = DateTimeField('Schedule Date (optional)', format='%Y-%m-%d %H:%M', validators=[Optional()])
     submit = SubmitField('Save Announcement')
 
@@ -235,4 +274,24 @@ class MemberSelfRegistrationForm(FlaskForm):
     emergency_contact_name = StringField('Emergency Contact Name', validators=[Optional(), Length(max=100)])
     emergency_contact_relationship = StringField('Relationship', validators=[Optional(), Length(max=50)])
     emergency_contact_phone = StringField('Emergency Phone', validators=[Optional(), Length(max=20)])
+    profession = StringField('Profession / Occupation', validators=[Optional(), Length(max=200)])
+    is_student = SelectField('Are you a student?', choices=[('', 'Select...'), ('yes', 'Yes'), ('no', 'No')])
+    school = StringField('School / Institution', validators=[Optional(), Length(max=200)])
+    faculty = StringField('Faculty', validators=[Optional(), Length(max=200)])
+    department = StringField('Department', validators=[Optional(), Length(max=200)])
+    level = StringField('Level / Year', validators=[Optional(), Length(max=50)])
+    accommodation = SelectField('Accommodation Type', choices=[('', 'Select...'), ('Hostel', 'Hostel'), ('Off-Campus', 'Off-Campus'), ('Home', 'Home')], validators=[Optional()])
+    hostel_name = StringField('Hostel Name', validators=[Optional(), Length(max=200)])
+    room_number = StringField('Room Number', validators=[Optional(), Length(max=50)])
+    previous_church = StringField('Previous Church', validators=[Optional(), Length(max=200)])
+    how_heard = SelectField('How did you hear about us?', choices=[
+        ('', 'Select...'), ('Friend', 'Friend'), ('Social Media', 'Social Media'),
+        ('Church Website', 'Church Website'), ('Campus Outreach', 'Campus Outreach'),
+        ('Family Member', 'Family Member'), ('Other', 'Other')
+    ], validators=[Optional()])
+    friend_name = StringField('Friend\'s Name (if referred)', validators=[Optional(), Length(max=100)])
+    other_source = StringField('Please specify (if Other)', validators=[Optional(), Length(max=200)])
+    preferred_social_platform = StringField('Preferred Social Platform', validators=[Optional(), Length(max=100)])
+    social_handle = StringField('Social Media Handle', validators=[Optional(), Length(max=100)])
+    profile_picture = FileField('Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'webp'])])
     submit = SubmitField('Submit Profile')

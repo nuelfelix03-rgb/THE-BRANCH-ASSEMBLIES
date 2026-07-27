@@ -43,35 +43,49 @@ def list_members():
                           search=search, ministry_filter=ministry_filter, status_filter=status_filter)
 
 
+def _split_full_name(full_name):
+    import re
+    parts = re.split(r'\s+', full_name.strip(), maxsplit=1)
+    first = parts[0] if parts else full_name.strip()
+    last = parts[1] if len(parts) > 1 else ''
+    return first, last
+
+
 @members_bp.route('/add', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def add_member():
     form = MemberForm()
     if form.validate_on_submit():
+        first, last = _split_full_name(form.full_name.data)
         member = Member(
             member_id=generate_member_id(),
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            middle_name=form.middle_name.data,
+            first_name=first,
+            last_name=last,
             gender=form.gender.data,
             date_of_birth=form.date_of_birth.data,
             marital_status=form.marital_status.data,
             phone_number=form.phone_number.data,
-            email=form.email.data,
+            email=form.email.data or None,
             residential_address=form.residential_address.data,
-            date_joined=form.date_joined.data,
-            baptism_status=form.baptism_status.data,
-            ministry_id=form.ministry_id.data if form.ministry_id.data != 0 else None,
-            membership_status=form.membership_status.data,
-            emergency_contact_name=form.emergency_contact_name.data,
-            emergency_contact_relationship=form.emergency_contact_relationship.data,
-            emergency_contact_phone=form.emergency_contact_phone.data,
-            notes=form.notes.data
+            profession=form.profession.data,
+            is_student=form.is_student.data,
+            school=form.school.data or None,
+            faculty=form.faculty.data or None,
+            department=form.department.data or None,
+            level=form.level.data or None,
+            accommodation=form.accommodation.data or None,
+            hostel_name=form.hostel_name.data or None,
+            room_number=form.room_number.data or None,
+            previous_church=form.previous_church.data or None,
+            how_heard=form.how_heard.data,
+            friend_name=form.friend_name.data or None,
+            other_source=form.other_source.data or None,
+            preferred_social_platform=form.preferred_social_platform.data or None,
+            social_handle=form.social_handle.data or None,
+            membership_status='Active',
+            baptism_status='Not Baptized'
         )
-        if form.profile_picture.data:
-            picture_file = save_profile_picture(form.profile_picture.data)
-            member.profile_picture = picture_file
         db.session.add(member)
         db.session.commit()
         flash(f'Member {member.full_name()} added successfully!', 'success')
@@ -86,29 +100,34 @@ def edit_member(id):
     member = Member.query.get_or_404(id)
     form = MemberForm(obj=member)
     if form.validate_on_submit():
-        member.first_name = form.first_name.data
-        member.last_name = form.last_name.data
-        member.middle_name = form.middle_name.data
+        first, last = _split_full_name(form.full_name.data)
+        member.first_name = first
+        member.last_name = last
         member.gender = form.gender.data
         member.date_of_birth = form.date_of_birth.data
         member.marital_status = form.marital_status.data
         member.phone_number = form.phone_number.data
-        member.email = form.email.data
+        member.email = form.email.data or None
         member.residential_address = form.residential_address.data
-        member.date_joined = form.date_joined.data
-        member.baptism_status = form.baptism_status.data
-        member.ministry_id = form.ministry_id.data if form.ministry_id.data != 0 else None
-        member.membership_status = form.membership_status.data
-        member.emergency_contact_name = form.emergency_contact_name.data
-        member.emergency_contact_relationship = form.emergency_contact_relationship.data
-        member.emergency_contact_phone = form.emergency_contact_phone.data
-        member.notes = form.notes.data
-        if form.profile_picture.data:
-            picture_file = save_profile_picture(form.profile_picture.data)
-            member.profile_picture = picture_file
+        member.profession = form.profession.data
+        member.is_student = form.is_student.data
+        member.school = form.school.data or None
+        member.faculty = form.faculty.data or None
+        member.department = form.department.data or None
+        member.level = form.level.data or None
+        member.accommodation = form.accommodation.data or None
+        member.hostel_name = form.hostel_name.data or None
+        member.room_number = form.room_number.data or None
+        member.previous_church = form.previous_church.data or None
+        member.how_heard = form.how_heard.data
+        member.friend_name = form.friend_name.data or None
+        member.other_source = form.other_source.data or None
+        member.preferred_social_platform = form.preferred_social_platform.data or None
+        member.social_handle = form.social_handle.data or None
         db.session.commit()
         flash(f'Member {member.full_name()} updated successfully!', 'success')
         return redirect(url_for('members.list_members'))
+    form.full_name.data = member.full_name()
     return render_template('members/form.html', form=form, title='Edit Member', member=member)
 
 

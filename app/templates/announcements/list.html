@@ -2,88 +2,105 @@
 {% block title %}Announcements - Church Management System{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0"><i class="bi bi-megaphone"></i> Announcements</h4>
-    {% if current_user.role != 'member' %}
-    <a href="{{ url_for('announcements.add_announcement') }}" class="btn btn-primary btn-sm">
-        <i class="bi bi-plus-lg"></i> New Announcement
-    </a>
+    <h4 class="mb-0 fw-bold"><i class="bi bi-megaphone me-2"></i>Announcements</h4>
+    {% if current_user.role in ['super_admin', 'church_admin'] %}
+    <a href="{{ url_for('announcements.add_announcement') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i> New Announcement</a>
     {% endif %}
 </div>
 
-<div class="card mb-4">
+<div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
-        <form method="GET" class="row g-3">
-            <div class="col-md-5">
-                <select name="category" class="form-select">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small fw-medium">Category</label>
+                <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">All Categories</option>
                     {% for cat in categories %}
                     <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-5">
-                <select name="status" class="form-select">
+            {% if current_user.role in ['super_admin', 'church_admin'] %}
+            <div class="col-md-4">
+                <label class="form-label small fw-medium">Status</label>
+                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="">All Status</option>
-                    <option value="Draft" {% if status_filter == 'Draft' %}selected{% endif %}>Draft</option>
                     <option value="Published" {% if status_filter == 'Published' %}selected{% endif %}>Published</option>
+                    <option value="Draft" {% if status_filter == 'Draft' %}selected{% endif %}>Draft</option>
                 </select>
             </div>
+            {% endif %}
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Filter</button>
+                <a href="{{ url_for('announcements.list_announcements') }}" class="btn btn-outline-secondary btn-sm w-100">Clear</a>
             </div>
         </form>
     </div>
 </div>
 
-{% for announcement in announcements.items %}
-<div class="card mb-3 announcement-card">
-    <div class="card-body">
-        <div class="d-flex justify-content-between">
-            <div>
-                <span class="badge bg-{{ 'primary' if announcement.category == 'General' else 'success' if announcement.category == 'Events' else 'warning' if announcement.category == 'Meetings' else 'info' if announcement.category == 'Prayer' else 'danger' }} mb-2">{{ announcement.category }}</span>
-                <h5 class="card-title mb-1">{{ announcement.title }}
-                {% if current_user.role == 'member' and announcement.id not in read_ids %}
-                    <span class="badge bg-warning text-dark ms-1">New</span>
-                {% endif %}
-                </h5>
-                <p class="text-muted small mb-0">
-                    By {{ announcement.author.username if announcement.author else 'Unknown' }}
-                    | {{ announcement.created_at.strftime('%b %d, %Y %I:%M %p') }}
-                    {% if announcement.scheduled_date %} | Scheduled: {{ announcement.scheduled_date.strftime('%b %d, %Y %I:%M %p') }}{% endif %}
-                </p>
-            </div>
-            <div class="text-end">
-                <span class="badge bg-{{ 'success' if announcement.status == 'Published' else 'secondary' }} mb-2">{{ announcement.status }}</span>
-                <div>
-                    <a href="{{ url_for('announcements.view_announcement', id=announcement.id) }}" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a>
-                    {% if current_user.role != 'member' %}
-                    <a href="{{ url_for('announcements.edit_announcement', id=announcement.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
-                    <a href="{{ url_for('announcements.delete_announcement', id=announcement.id) }}" class="btn btn-sm btn-outline-danger btn-delete"><i class="bi bi-trash"></i></a>
+{% if announcements.items %}
+<div class="row g-3">
+    {% for announcement in announcements.items %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100 announcement-card">
+            {% if announcement.image %}
+            <img src="{{ url_for('static', filename='announcement_images/' + announcement.image) }}" class="card-img-top" alt="{{ announcement.title }}" style="height:180px;object-fit:cover;">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-{{ 'info' if announcement.category == 'General' else 'warning' if announcement.category == 'Events' else 'primary' if announcement.category == 'Meetings' else 'success' if announcement.category == 'Prayer' else 'danger' }} bg-opacity-10 text-{{ 'info' if announcement.category == 'General' else 'warning' if announcement.category == 'Events' else 'primary' if announcement.category == 'Meetings' else 'success' if announcement.category == 'Prayer' else 'danger' }} fw-medium">{{ announcement.category }}</span>
+                    {% if announcement.id not in read_ids and current_user.role == 'member' %}
+                    <span class="badge bg-danger rounded-pill">New</span>
+                    {% endif %}
+                </div>
+                <h5 class="card-title fw-bold mb-1">{{ announcement.title }}</h5>
+                <div class="small text-muted mb-2">
+                    <i class="bi bi-person me-1"></i>{{ announcement.author_name or 'Admin' }}
+                    <span class="mx-1">•</span>
+                    <i class="bi bi-calendar3 me-1"></i>{{ announcement.created_at.strftime('%b %d, %Y') }}
+                </div>
+                <p class="card-text flex-grow-1">{{ announcement.content[:150] }}{% if announcement.content|length > 150 %}...{% endif %}</p>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <a href="{{ url_for('announcements.view_announcement', id=announcement.id) }}" class="btn btn-sm btn-outline-primary">Read More</a>
+                    {% if current_user.role in ['super_admin', 'church_admin'] %}
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light border-0" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><a class="dropdown-item" href="{{ url_for('announcements.edit_announcement', id=announcement.id) }}"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('announcements.delete_announcement', id=announcement.id) }}" onclick="return confirm('Delete this announcement?')"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% if current_user.role == 'member' and announcement.id in read_ids %}
+                    <small class="text-muted"><i class="bi bi-check-circle-fill me-1"></i>Read</small>
                     {% endif %}
                 </div>
             </div>
         </div>
-        <p class="card-text mt-2">{{ announcement.content[:300] }}{% if announcement.content|length > 300 %}...{% endif %}</p>
     </div>
-</div>
-{% else %}
-<div class="card">
-    <div class="card-body text-center py-5">
-        <i class="bi bi-megaphone fs-1 text-muted"></i>
-        <p class="mt-3 text-muted">No announcements found.</p>
-    </div>
-</div>
-{% endfor %}
-
-{% if announcements.pages > 1 %}
-<nav><ul class="pagination justify-content-center">
-    {% for page_num in announcements.iter_pages() %}
-        {% if page_num %}
-        <li class="page-item {% if page_num == announcements.page %}active{% endif %}">
-            <a class="page-link" href="{{ url_for('announcements.list_announcements', page=page_num, category=category_filter, status=status_filter) }}">{{ page_num }}</a>
-        </li>
-        {% endif %}
     {% endfor %}
-</ul></nav>
+</div>
+
+<nav class="mt-4">
+    <ul class="pagination pagination-sm justify-content-center">
+        {% for page_num in announcements.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                <li class="page-item {% if page_num == announcements.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('announcements.list_announcements', page=page_num, category=category_filter, status=status_filter) }}">{{ page_num }}</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</nav>
+{% else %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-megaphone" style="font-size:3rem;"></i>
+    <p class="mt-3">No announcements found.</p>
+    {% if current_user.role in ['super_admin', 'church_admin'] %}
+    <a href="{{ url_for('announcements.add_announcement') }}" class="btn btn-primary btn-sm">Create First Announcement</a>
+    {% endif %}
+</div>
 {% endif %}
 {% endblock %}

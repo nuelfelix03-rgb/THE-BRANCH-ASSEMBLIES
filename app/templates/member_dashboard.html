@@ -84,19 +84,22 @@
             <div class="card-body">
                 {% if recent_announcements %}
                     {% for announcement in recent_announcements %}
-                    <div class="d-flex mb-3 pb-2 border-bottom">
-                        <div class="me-2">
-                            <span class="badge bg-{{ 'primary' if announcement.category == 'General' else 'success' if announcement.category == 'Events' else 'warning' if announcement.category == 'Meetings' else 'info' if announcement.category == 'Prayer' else 'danger' }}">{{ announcement.category }}</span>
-                        </div>
-                        <div>
-                            <strong>{{ announcement.title }}</strong>
-                            <p class="mb-0 text-muted small">{{ announcement.content[:200] }}{% if announcement.content|length > 200 %}...{% endif %}</p>
-                            <small class="text-muted">{{ announcement.created_at.strftime('%b %d, %Y') }}</small>
+                    <div class="dashboard-announcement-card">
+                        {% if announcement.image %}
+                        <img src="{{ url_for('static', filename='announcement_images/' + announcement.image) }}" alt="">
+                        {% endif %}
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-{{ 'primary' if announcement.category == 'General' else 'success' if announcement.category == 'Events' else 'warning' if announcement.category == 'Meetings' else 'info' if announcement.category == 'Prayer' else 'danger' }} bg-opacity-10 text-{{ 'primary' if announcement.category == 'General' else 'success' if announcement.category == 'Events' else 'warning' if announcement.category == 'Meetings' else 'info' if announcement.category == 'Prayer' else 'danger' }} fw-medium" style="font-size:10px;">{{ announcement.category }}</span>
+                                <small class="text-muted">{{ announcement.created_at.strftime('%b %d') }}</small>
+                            </div>
+                            <a href="{{ url_for('announcements.view_announcement', id=announcement.id) }}" class="text-decoration-none fw-semibold" style="color:var(--text-main);">{{ announcement.title }}</a>
+                            <p class="mb-0 text-muted small text-truncate">{{ announcement.content[:120] }}</p>
                         </div>
                     </div>
                     {% endfor %}
                 {% else %}
-                <p class="text-muted mb-0">No announcements yet.</p>
+                <p class="text-muted mb-0 text-center py-3">No announcements yet.</p>
                 {% endif %}
             </div>
         </div>
@@ -232,7 +235,13 @@
             <div class="card-body">
                 {% if recent_announcements %}
                     {% for a in recent_announcements %}
-                    <div class="mb-2 pb-2 border-bottom"><strong>{{ a.title }}</strong><br><small class="text-muted">{{ a.content[:150] }}</small></div>
+                    <div class="dashboard-announcement-card">
+                        {% if a.image %}<img src="{{ url_for('static', filename='announcement_images/' + a.image) }}" alt="">{% endif %}
+                        <div class="flex-grow-1 min-w-0">
+                            <a href="{{ url_for('announcements.view_announcement', id=a.id) }}" class="text-decoration-none fw-semibold" style="color:var(--text-main);">{{ a.title }}</a>
+                            <p class="mb-0 text-muted small text-truncate">{{ a.content[:120] }}</p>
+                        </div>
+                    </div>
                     {% endfor %}
                 {% else %}<p class="text-muted mb-0">No announcements.</p>{% endif %}
             </div>

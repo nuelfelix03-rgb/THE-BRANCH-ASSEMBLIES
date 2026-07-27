@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <meta name="theme-color" content="#d32f2f">
+    <meta name="theme-color" content="#C8102E">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ChurchMS">
@@ -27,7 +27,9 @@
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <a href="{{ url_for('main.dashboard') }}" class="text-decoration-none">
-                    <h5><i class="bi bi-church"></i> {{ church_settings.church_name or 'CMS' }}</h5>
+                    <img src="{{ url_for('static', filename='images/church-logo.svg') }}" alt="Logo" class="sidebar-logo">
+                    <h5>{{ church_settings.church_name or 'ZOÉ CHURCH' }}</h5>
+                    <small class="text-muted" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;">{{ current_user.role.replace('_',' ')|upper }}</small>
                 </a>
             </div>
             <ul class="nav flex-column">
@@ -106,6 +108,10 @@
                 <button class="btn btn-outline-secondary border-0" id="sidebarToggle" aria-label="Toggle sidebar">
                     <i class="bi bi-list fs-5"></i>
                 </button>
+                <span class="navbar-brand d-none d-sm-inline ms-2">
+                    <img src="{{ url_for('static', filename='images/church-logo.svg') }}" alt="" style="height:28px;width:28px;" class="me-2">
+                    <span class="d-none d-md-inline" style="background:var(--brand-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">{{ church_settings.church_name or 'ZOÉ CHURCH' }}</span>
+                </span>
                 <div class="ms-auto d-flex align-items-center gap-2">
                     <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
                         <i class="bi bi-moon-fill" id="themeIcon"></i>
@@ -116,11 +122,15 @@
                     </a>
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle py-2" data-bs-toggle="dropdown" aria-label="User menu">
+                            {% if current_user.profile_picture %}
+                            <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" alt="" class="rounded-circle me-1" style="width:32px;height:32px;object-fit:cover;">
+                            {% else %}
                             <i class="bi bi-person-circle fs-4 me-1"></i>
-                            <span class="d-none d-sm-inline">{{ current_user.username }}</span>
-                            <span class="badge bg-info ms-1 d-none d-md-inline">{{ current_user.role }}</span>
+                            {% endif %}
+                            <span class="d-none d-sm-inline fw-medium">{{ current_user.username }}</span>
+                            <span class="badge bg-primary ms-1 d-none d-md-inline" style="font-size:9px;letter-spacing:1px;">{{ current_user.role.replace('_',' ')|upper }}</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                             <li><a class="dropdown-item" href="{{ url_for('main.my_profile') }}"><i class="bi bi-person"></i> My Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
@@ -143,6 +153,9 @@
 
                 {% block content %}{% endblock %}
             </div>
+            <footer class="app-footer text-center py-3">
+                <small>&copy; {{ now().year if now is defined else '2026' }} {{ church_settings.church_name or 'Zoé Church' }}. All rights reserved.</small>
+            </footer>
         </div>
     </div>
     {% else %}
