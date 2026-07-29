@@ -95,7 +95,8 @@ class Member(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def full_name(self):
-        return f'{self.first_name} {self.last_name}'.strip()
+        parts = [p for p in [self.first_name, self.last_name] if p]
+        return ' '.join(parts) if parts else 'Unknown'
 
     def age(self):
         if self.date_of_birth:

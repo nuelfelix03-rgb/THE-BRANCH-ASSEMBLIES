@@ -84,7 +84,7 @@ def add_member():
             preferred_social_platform=form.preferred_social_platform.data or None,
             social_handle=form.social_handle.data or None,
             membership_status='Active',
-            baptism_status='Not Baptized'
+            baptism_status=form.baptism_status.data or 'Not Baptized'
         )
         db.session.add(member)
         db.session.commit()

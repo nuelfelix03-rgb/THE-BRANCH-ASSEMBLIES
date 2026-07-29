@@ -1,7 +1,7 @@
 {
-  "name": "Church Management System",
-  "short_name": "ChurchMS",
-  "description": "Church Management System - Manage members, attendance, events & announcements",
+  "name": "THE BRANCH ASSEMBLY",
+  "short_name": "Branch",
+  "description": "THE BRANCH ASSEMBLY - Manage members, attendance, events & announcements",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",

@@ -3,6 +3,13 @@
 :root {
   --sidebar-width: 250px;
   --brand-red: #C8102E;
+  --fire: #C8102E;
+  --red: #C8102E;
+  --fire-bright: #F45A1D;
+  --fire-glow: #FF9F1C;
+  --fire-orange: #F45A1D;
+  --fire-soft: rgba(200,16,46,0.08);
+  --fire-grad: linear-gradient(135deg, #C8102E, #F45A1D);
   --brand-orange: #F45A1D;
   --brand-gold: #FF9F1C;
   --brand-grad: linear-gradient(135deg, #C8102E, #F45A1D);

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Dashboard - Church Management System{% endblock %}
+{% block title %}Dashboard - THE BRANCH ASSEMBLY{% endblock %}
 {% block content %}
 
 <!-- Church Name Hero Banner -->
@@ -7,7 +7,7 @@
     <div class="church-hero-overlay"></div>
     <div class="church-hero-content text-center">
         <i class="bi bi-church church-hero-icon"></i>
-        <h1 class="church-hero-title">{{ church_settings.church_name or 'Church Management' }}</h1>
+        <h1 class="church-hero-title">{{ church_settings.church_name or 'THE BRANCH ASSEMBLY' }}</h1>
         {% if church_settings.welcome_message %}
         <p class="church-hero-text">{{ church_settings.welcome_message }}</p>
         {% endif %}

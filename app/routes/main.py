@@ -294,6 +294,7 @@ def edit_admin_profile():
         return redirect(url_for('main.dashboard'))
 
     from flask_wtf import FlaskForm
+    from flask_wtf.file import FileField, FileAllowed
     from wtforms import StringField, TextAreaField, SubmitField
     from wtforms.validators import Optional, Length
 
@@ -307,6 +308,7 @@ def edit_admin_profile():
         whatsapp = StringField('WhatsApp Number', validators=[Optional(), Length(max=20)])
         linkedin = StringField('LinkedIn URL', validators=[Optional(), Length(max=255)])
         bio = TextAreaField('Bio', validators=[Optional()])
+        profile_picture = FileField('Profile Picture', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'webp'])])
         submit = SubmitField('Update Profile')
 
     form = AdminProfileForm(obj=current_user)
@@ -320,11 +322,18 @@ def edit_admin_profile():
         current_user.whatsapp = form.whatsapp.data
         current_user.linkedin = form.linkedin.data
         current_user.bio = form.bio.data
+
+        picture = request.files.get('profile_picture')
+        if picture and picture.filename:
+            if current_user.profile_picture:
+                delete_file(current_user.profile_picture)
+            current_user.profile_picture = save_profile_picture(picture)
+
         db.session.commit()
         flash('Profile updated!', 'success')
         return redirect(url_for('main.my_profile'))
 
-    return render_template('admin_profile_edit.html', form=form)
+    return render_template('admin_profile_edit.html', form=form, profile_user=current_user)
 
 
 def db_monthly_growth():
