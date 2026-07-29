@@ -87,7 +87,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
                 <img src="{{ url_for('static', filename='images/church-logo.svg') }}" alt="" style="height:32px;width:32px;" class="me-2">
-                {{ church_settings.church_name or 'ZOÉ CHURCH' }}
+                {{ church_settings.church_name or "THE BRANCH ASSEMBLY INT'L" }}
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
                 <span class="navbar-toggler-icon"></span>
@@ -108,7 +108,7 @@
             {% if church_settings.welcome_message %}
             <p class="lead mb-4" style="color:rgba(255,255,255,0.7);">{{ church_settings.welcome_message }}</p>
             {% endif %}
-            <p class="lead mb-4" style="color:rgba(255,255,255,0.6);">Church management made simple — members, attendance, ministries, and more.</p>
+            <p class="lead mb-4" style="color:rgba(255,255,255,0.6);">Manage your church community — members, attendance, ministries, and more.</p>
             <a href="{{ url_for('auth.register') }}" class="btn btn-brand btn-lg px-5">Get Started</a>
         </div>
     </section>

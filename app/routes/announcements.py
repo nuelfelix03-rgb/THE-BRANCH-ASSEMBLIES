@@ -74,7 +74,7 @@ def add_announcement():
 
         flash('Announcement created!', 'success')
         return redirect(url_for('announcements.list_announcements'))
-    return render_template('announcements/form.html', form=form, title='Add Announcement')
+    return render_template('announcements/form.html', form=form, title='Add Announcement', announcement=None)
 
 
 @announcements_bp.route('/edit/<int:id>', methods=['GET', 'POST'])

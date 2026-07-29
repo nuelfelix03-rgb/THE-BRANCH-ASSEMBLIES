@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#C8102E">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ChurchMS">
+    <meta name="apple-mobile-web-app-title" content="The Branch">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="ChurchMS">
+    <meta name="application-name" content="The Branch">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <link rel="icon" href="{{ url_for('static', filename='icons/icon-192.png') }}" sizes="192x192" type="image/png">
     <link rel="icon" href="{{ url_for('static', filename='icons/icon-192.svg') }}" type="image/svg+xml">
@@ -28,7 +28,7 @@
             <div class="sidebar-header">
                 <a href="{{ url_for('main.dashboard') }}" class="text-decoration-none">
                     <img src="{{ url_for('static', filename='images/church-logo.svg') }}" alt="Logo" class="sidebar-logo">
-                    <h5>{{ church_settings.church_name or 'ZOÉ CHURCH' }}</h5>
+                    <h5>{{ church_settings.church_name or "THE BRANCH ASSEMBLY INT'L" }}</h5>
                     <small class="text-muted" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;">{{ current_user.role.replace('_',' ')|upper }}</small>
                 </a>
             </div>
@@ -110,7 +110,7 @@
                 </button>
                 <span class="navbar-brand d-none d-sm-inline ms-2">
                     <img src="{{ url_for('static', filename='images/church-logo.svg') }}" alt="" style="height:28px;width:28px;" class="me-2">
-                    <span class="d-none d-md-inline" style="background:var(--brand-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">{{ church_settings.church_name or 'ZOÉ CHURCH' }}</span>
+                    <span class="d-none d-md-inline" style="background:var(--brand-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">{{ church_settings.church_name or "THE BRANCH ASSEMBLY INT'L" }}</span>
                 </span>
                 <div class="ms-auto d-flex align-items-center gap-2">
                     <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">

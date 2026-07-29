@@ -169,7 +169,7 @@ def register_profile():
         db.session.commit()
         flash('Your profile has been created! Welcome to the church.', 'success')
         return redirect(url_for('main.dashboard'))
-    return render_template('member_register.html', form=form)
+    return render_template('member_register.html', form=form, edit_mode=False, member=None)
 
 
 @main_bp.route('/edit-profile', methods=['GET', 'POST'])
