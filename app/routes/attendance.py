@@ -17,9 +17,18 @@ def list_attendance():
     service_filter = request.args.get('service_type', '')
     date_from = request.args.get('date_from', '')
     date_to = request.args.get('date_to', '')
+    search_query = request.args.get('search', '').strip()
 
-    query = Attendance.query
+    query = Attendance.query.join(Member, Attendance.member_id == Member.id)
 
+    if search_query:
+        like = f'%{search_query}%'
+        query = query.filter(
+            Member.member_id.like(like) |
+            Member.first_name.like(like) |
+            Member.last_name.like(like) |
+            Member.phone.like(like)
+        )
     if service_filter:
         query = query.filter(Attendance.service_type == service_filter)
     if date_from:
@@ -33,7 +42,7 @@ def list_attendance():
 
     return render_template('attendance/list.html', attendance_records=attendance_records,
                           service_types=service_types, service_filter=service_filter,
-                          date_from=date_from, date_to=date_to)
+                          date_from=date_from, date_to=date_to, search_query=search_query)
 
 
 @attendance_bp.route('/add', methods=['GET', 'POST'])
