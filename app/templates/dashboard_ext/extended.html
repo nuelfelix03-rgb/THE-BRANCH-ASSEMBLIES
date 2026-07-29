@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Extended Dashboard{% endblock %}
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="bi bi-speedometer2 me-2"></i>Extended Dashboard</h4>
+
+<div class="row mb-4">
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="card border-0 shadow-sm text-center p-3 h-100">
+            <div class="stat-label">Total Members</div>
+            <div class="stat-value">{{ total_members }}</div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="card border-0 shadow-sm text-center p-3 h-100">
+            <div class="stat-label">Today's Attendance</div>
+            <div class="stat-value" style="font-size:24px;">{{ today_attendance }}</div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="card border-0 shadow-sm text-center p-3 h-100">
+            <div class="stat-label">This Week</div>
+            <div class="stat-value" style="font-size:24px;">{{ week_attendance }}</div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="card border-0 shadow-sm text-center p-3 h-100">
+            <div class="stat-label">Birthdays This Month</div>
+            <div class="stat-value" style="font-size:24px;">{{ birthdays|length }}</div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="card border-0 shadow-sm text-center p-3 h-100">
+            <div class="stat-label">New Members (Month)</div>
+            <div class="stat-value" style="font-size:24px;">{{ new_members|length }}</div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6 mb-3">
+        <div class="card border-0 shadow-sm text-center p-3 h-100">
+            <div class="stat-label">Ministries</div>
+            <div class="stat-value" style="font-size:24px;">{{ total_ministries }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% if birthdays %}
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header fw-bold"><i class="bi bi-gift me-2"></i>Birthdays This Month</div>
+            <div class="card-body">
+                {% for m in birthdays %}
+                <div class="d-flex justify-content-between mb-2 pb-1 border-bottom">
+                    <span><a href="{{ url_for('members.view_member', id=m.id) }}" class="text-decoration-none fw-medium">{{ m.full_name() }}</a></span>
+                    <small class="text-muted">{{ m.date_of_birth.strftime('%B %d') if m.date_of_birth else '' }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if new_members %}
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header fw-bold"><i class="bi bi-person-plus me-2"></i>New Members This Month</div>
+            <div class="card-body">
+                {% for m in new_members %}
+                <div class="d-flex justify-content-between mb-2 pb-1 border-bottom">
+                    <span><a href="{{ url_for('members.view_member', id=m.id) }}" class="text-decoration-none fw-medium">{{ m.full_name() }}</a></span>
+                    <small class="text-muted">{{ m.date_joined.strftime('%b %d') if m.date_joined else '' }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if upcoming_events %}
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header fw-bold"><i class="bi bi-calendar-event me-2"></i>Upcoming Events</div>
+            <div class="card-body">
+                {% for e in upcoming_events %}
+                <div class="d-flex justify-content-between mb-2 pb-1 border-bottom">
+                    <span class="fw-medium">{{ e.name }}</span>
+                    <small class="text-muted">{{ e.start_date.strftime('%b %d, %I:%M %p') }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

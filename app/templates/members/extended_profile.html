@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}{{ member.full_name() }} - Extended Profile{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0 fw-bold"><i class="bi bi-person-lines-fill me-2"></i>{{ member.full_name() }}</h4>
+    <a href="{{ url_for('members.view_member', id=member.id) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> Back</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-people me-2"></i>Family Members</span>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addFamilyForm">+ Add</button>
+            </div>
+            <div class="card-body">
+                <div class="collapse mb-3" id="addFamilyForm">
+                    <form method="POST" action="{{ url_for('profile_ext.add_family_member', member_id=member.id) }}" class="border rounded p-3 bg-light">
+                        <div class="row g-2">
+                            <div class="col-6"><input name="name" class="form-control form-control-sm" placeholder="Full name" required></div>
+                            <div class="col-6"><input name="relationship" class="form-control form-control-sm" placeholder="Relationship" required></div>
+                            <div class="col-6"><input name="phone" class="form-control form-control-sm" placeholder="Phone"></div>
+                            <div class="col-6"><input name="email" class="form-control form-control-sm" placeholder="Email"></div>
+                            <div class="col-6"><input name="occupation" class="form-control form-control-sm" placeholder="Occupation"></div>
+                            <div class="col-6"><input name="date_of_birth" type="date" class="form-control form-control-sm"></div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input type="checkbox" name="is_emergency" class="form-check-input" id="isEmerg">
+                                    <label class="form-check-label small" for="isEmerg">Emergency Contact</label>
+                                </div>
+                            </div>
+                            <div class="col-12"><button class="btn btn-sm btn-primary w-100">Add</button></div>
+                        </div>
+                    </form>
+                </div>
+                {% if family %}
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>Name</th><th>Relation</th><th>Phone</th><th></th></tr></thead>
+                        <tbody>
+                            {% for f in family %}
+                            <tr>
+                                <td class="fw-medium">{{ f.name }}{% if f.is_emergency %} <span class="badge bg-danger" style="font-size:8px;">EMERGENCY</span>{% endif %}</td>
+                                <td>{{ f.relationship }}</td>
+                                <td><small>{{ f.phone or '—' }}</small></td>
+                                <td><a href="{{ url_for('profile_ext.delete_family_member', id=f.id) }}" class="btn btn-sm btn-outline-danger py-0" onclick="return confirm('Remove?')"><i class="bi bi-x"></i></a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0 small">No family members added.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-stars me-2"></i>Skills & Talents</span>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addSkillForm">+ Add</button>
+            </div>
+            <div class="card-body">
+                <div class="collapse mb-3" id="addSkillForm">
+                    <form method="POST" action="{{ url_for('profile_ext.add_skill', member_id=member.id) }}" class="border rounded p-3 bg-light">
+                        <div class="row g-2">
+                            <div class="col-6"><input name="skill_name" class="form-control form-control-sm" placeholder="Skill" required></div>
+                            <div class="col-6">
+                                <select name="proficiency" class="form-select form-select-sm">
+                                    <option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option><option value="Expert">Expert</option>
+                                </select>
+                            </div>
+                            <div class="col-12"><button class="btn btn-sm btn-primary w-100">Add</button></div>
+                        </div>
+                    </form>
+                </div>
+                {% if skills %}
+                <div class="d-flex flex-wrap gap-2">
+                    {% for s in skills %}
+                    <span class="badge bg-primary bg-opacity-10 fw-medium d-flex align-items-center gap-1" style="color:var(--brand-red);padding:6px 12px;">
+                        {{ s.skill_name }} <small class="text-muted">({{ s.proficiency }})</small>
+                        <a href="{{ url_for('profile_ext.delete_skill', id=s.id) }}" class="text-danger ms-1 text-decoration-none" onclick="return confirm('Remove?')"><i class="bi bi-x-circle"></i></a>
+                    </span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted mb-0 small">No skills added.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-file-earmark me-2"></i>Documents</span>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addDocForm">+ Upload</button>
+            </div>
+            <div class="card-body">
+                <div class="collapse mb-3" id="addDocForm">
+                    <form method="POST" enctype="multipart/form-data" action="{{ url_for('profile_ext.upload_document', member_id=member.id) }}" class="border rounded p-3 bg-light">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <select name="document_type" class="form-select form-select-sm">
+                                    <option value="ID Card">ID Card</option><option value="Passport">Passport</option>
+                                    <option value="Certificate">Certificate</option><option value="Photo">Photo</option><option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-6"><input type="file" name="document_file" class="form-control form-control-sm" required></div>
+                            <div class="col-12"><input name="description" class="form-control form-control-sm" placeholder="Description (optional)"></div>
+                            <div class="col-12"><button class="btn btn-sm btn-primary w-100">Upload</button></div>
+                        </div>
+                    </form>
+                </div>
+                {% if documents %}
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>Type</th><th>Description</th><th>Date</th><th></th></tr></thead>
+                        <tbody>
+                            {% for d in documents %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ d.document_type }}</span></td>
+                                <td><small>{{ d.description or '—' }}</small></td>
+                                <td><small class="text-muted">{{ d.uploaded_at.strftime('%b %d') }}</small></td>
+                                <td>
+                                    <a href="{{ url_for('static', filename='member_docs/' + d.file_name) }}" class="btn btn-sm btn-outline-primary py-0" target="_blank"><i class="bi bi-eye"></i></a>
+                                    <a href="{{ url_for('profile_ext.delete_document', id=d.id) }}" class="btn btn-sm btn-outline-danger py-0" onclick="return confirm('Delete?')"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0 small">No documents uploaded.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-droplet me-2"></i>Baptism Records</span>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addBaptismForm">+ Add</button>
+            </div>
+            <div class="card-body">
+                <div class="collapse mb-3" id="addBaptismForm">
+                    <form method="POST" action="{{ url_for('profile_ext.add_baptism', member_id=member.id) }}" class="border rounded p-3 bg-light">
+                        <div class="row g-2">
+                            <div class="col-6"><input name="baptism_date" type="date" class="form-control form-control-sm" required></div>
+                            <div class="col-6"><input name="baptized_by" class="form-control form-control-sm" placeholder="Baptized by"></div>
+                            <div class="col-6"><input name="church_name" class="form-control form-control-sm" placeholder="Church name"></div>
+                            <div class="col-6"><input name="notes" class="form-control form-control-sm" placeholder="Notes"></div>
+                            <div class="col-12"><button class="btn btn-sm btn-primary w-100">Add</button></div>
+                        </div>
+                    </form>
+                </div>
+                {% if baptisms %}
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>Date</th><th>Baptized By</th><th>Church</th><th></th></tr></thead>
+                        <tbody>
+                            {% for b in baptisms %}
+                            <tr>
+                                <td>{{ b.baptism_date.strftime('%b %d, %Y') }}</td>
+                                <td>{{ b.baptized_by or '—' }}</td>
+                                <td><small>{{ b.church_name or '—' }}</small></td>
+                                <td><a href="{{ url_for('profile_ext.delete_baptism', id=b.id) }}" class="btn btn-sm btn-outline-danger py-0" onclick="return confirm('Delete?')"><i class="bi bi-x"></i></a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0 small">No baptism records.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a href="{{ url_for('qr_attendance.member_qr_code', member_id=member.id) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+        <i class="bi bi-qr-code me-1"></i> View QR Code
+    </a>
+    <a href="{{ url_for('members.view_member', id=member.id) }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-person me-1"></i> Standard Profile
+    </a>
+</div>
+{% endblock %}

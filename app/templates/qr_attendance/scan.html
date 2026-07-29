@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}QR Scan - {{ church_settings.church_name or "THE BRANCH ASSEMBLY INT'L" }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0 fw-bold"><i class="bi bi-qr-code-scan me-2"></i>QR Check-In</h4>
+    <a href="{{ url_for('qr_attendance.manual_checkin') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-person-plus me-1"></i> Manual Check-In</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4 text-center">
+        <div class="mb-4">
+            <i class="bi bi-qr-code" style="font-size:5rem;color:var(--brand-red);"></i>
+            <h5 class="mt-2">Scan Member QR Code</h5>
+            <p class="text-muted">Enter or scan the Member ID below</p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="input-group input-group-lg mb-3">
+                    <input type="text" id="memberInput" class="form-control text-center" placeholder="CH-2026-XXXX" autofocus>
+                    <button class="btn btn-primary" id="checkInBtn"><i class="bi bi-check-lg me-1"></i> Check In</button>
+                </div>
+                <select id="serviceSelect" class="form-select mb-3">
+                    {% if services %}
+                        {% for s in services %}<option value="{{ s.name }}">{{ s.name }}</option>{% endfor %}
+                    {% else %}
+                        <option>Sunday Service</option><option>Bible Study</option><option>Prayer Meeting</option>
+                    {% endif %}
+                </select>
+                <div id="result" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const input = document.getElementById('memberInput');
+const btn = document.getElementById('checkInBtn');
+const service = document.getElementById('serviceSelect');
+const result = document.getElementById('result');
+
+function doCheckin() {
+    const val = input.value.trim();
+    if (!val) { result.innerHTML = '<div class="alert alert-danger py-2">Enter a Member ID</div>'; return; }
+    result.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
+    fetch('{{ url_for("qr_attendance.check_in") }}', {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: 'member_id='+encodeURIComponent(val)+'&service_type='+encodeURIComponent(service.value)
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.error) { result.innerHTML = '<div class="alert alert-danger py-2">'+d.error+'</div>'; }
+        else { result.innerHTML = '<div class="alert alert-success py-2"><strong>'+d.member+'</strong><br>'+d.message+'</div>'; input.value=''; }
+    })
+    .catch(() => result.innerHTML = '<div class="alert alert-danger py-2">Error checking in</div>');
+}
+
+btn.addEventListener('click', doCheckin);
+input.addEventListener('keydown', e => { if (e.key === 'Enter') doCheckin(); });
+</script>
+{% endblock %}

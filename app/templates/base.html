@@ -84,6 +84,26 @@
                         <i class="bi bi-file-earmark-bar-graph"></i> Reports
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('dashboard_ext') %}active{% endif %}" href="{{ url_for('dashboard_ext.extended_dashboard') }}">
+                        <i class="bi bi-bar-chart"></i> Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('giving') %}active{% endif %}" href="{{ url_for('giving.list_givings') }}">
+                        <i class="bi bi-cash-coin"></i> Giving
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('qr_attendance') %}active{% endif %}" href="{{ url_for('qr_attendance.scan_page') }}">
+                        <i class="bi bi-qr-code"></i> QR Check-In
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('member_search') %}active{% endif %}" href="{{ url_for('member_search.search_members') }}">
+                        <i class="bi bi-search"></i> Search
+                    </a>
+                </li>
                 {% endif %}
                 {% if current_user.role == 'super_admin' %}
                 <li class="nav-item mt-2">
