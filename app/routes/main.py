@@ -164,7 +164,9 @@ def register_profile():
         picture = request.files.get('profile_picture')
         if picture and picture.filename:
             from app.utils.helpers import save_profile_picture
-            member.profile_picture = save_profile_picture(picture)
+            picture_file = save_profile_picture(picture)
+            member.profile_picture = picture_file
+            current_user.profile_picture = picture_file
         db.session.add(member)
         db.session.commit()
         flash('Your profile has been created! Welcome to the church.', 'success')
@@ -217,7 +219,11 @@ def edit_my_member_profile():
 
         picture = request.files.get('profile_picture')
         if picture and picture.filename:
-            member.profile_picture = save_profile_picture(picture)
+            picture_file = save_profile_picture(picture)
+            if member.profile_picture and member.profile_picture != current_user.profile_picture:
+                delete_file(member.profile_picture)
+            member.profile_picture = picture_file
+            current_user.profile_picture = picture_file
 
         db.session.commit()
         flash('Your profile has been updated!', 'success')
@@ -233,8 +239,11 @@ def remove_my_photo():
         if member and member.profile_picture:
             delete_file(member.profile_picture)
             member.profile_picture = None
-            db.session.commit()
-            flash('Photo removed.', 'info')
+        if current_user.profile_picture:
+            delete_file(current_user.profile_picture)
+            current_user.profile_picture = None
+        db.session.commit()
+        flash('Photo removed.', 'info')
     else:
         if current_user.profile_picture:
             delete_file(current_user.profile_picture)
@@ -270,8 +279,11 @@ def edit_my_photo():
         picture_file = save_profile_picture(form.profile_picture.data)
         if current_user.role == 'member':
             member = Member.query.filter_by(email=current_user.email).first()
+            if current_user.profile_picture and current_user.profile_picture != (member.profile_picture if member else None):
+                delete_file(current_user.profile_picture)
+            current_user.profile_picture = picture_file
             if member:
-                if member.profile_picture:
+                if member.profile_picture and member.profile_picture != picture_file:
                     delete_file(member.profile_picture)
                 member.profile_picture = picture_file
         else:
