@@ -70,28 +70,6 @@ class BaptismRecord(db.Model):
         return f'<BaptismRecord {self.member_id} on {self.baptism_date}>'
 
 
-class Giving(db.Model):
-    __tablename__ = 'giving'
-
-    id = db.Column(db.Integer, primary_key=True)
-    member_id = db.Column(db.Integer, db.ForeignKey('members.id'), nullable=True)
-    giver_name = db.Column(db.String(200))
-    amount = db.Column(db.Float, nullable=False)
-    giving_type = db.Column(db.String(50), nullable=False)
-    payment_method = db.Column(db.String(50), default='Cash')
-    transaction_ref = db.Column(db.String(100), unique=True)
-    phone = db.Column(db.String(20))
-    email = db.Column(db.String(120))
-    notes = db.Column(db.Text)
-    date = db.Column(db.Date, default=date.today)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    member = db.relationship('Member', backref=db.backref('givings', lazy='dynamic'))
-
-    def __repr__(self):
-        return f'<Giving {self.giving_type}: {self.amount}>'
-
-
 class QRCodeAttendance(db.Model):
     __tablename__ = 'qr_attendance'
 

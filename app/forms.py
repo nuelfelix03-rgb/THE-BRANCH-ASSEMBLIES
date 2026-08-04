@@ -179,15 +179,6 @@ class EventForm(FlaskForm):
         ]
 
 
-class NotificationForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired(), Length(max=200)])
-    message = TextAreaField('Message', validators=[DataRequired()])
-    notification_type = SelectField('Type', choices=[
-        ('In-App', 'In-App'), ('Email', 'Email')
-    ])
-    submit = SubmitField('Send Notification')
-
-
 class RequestResetForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Request Password Reset')

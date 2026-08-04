@@ -74,26 +74,10 @@
                     </a>
                 </li>
                 {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('notifications') %}active{% endif %}" href="{{ url_for('notifications.list_notifications') }}">
-                        <i class="bi bi-bell"></i> Notifications
-                        <span class="badge bg-danger rounded-pill notification-badge" id="notif-count">0</span>
-                    </a>
-                </li>
                 {% if current_user.role != 'member' %}
                 <li class="nav-item">
                     <a class="nav-link {% if request.endpoint and request.endpoint.startswith('reports') %}active{% endif %}" href="{{ url_for('reports.index') }}">
-                        <i class="bi bi-file-earmark-bar-graph"></i> Reports
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('dashboard_ext') %}active{% endif %}" href="{{ url_for('dashboard_ext.extended_dashboard') }}">
-                        <i class="bi bi-bar-chart"></i> Analytics
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint and request.endpoint.startswith('giving') %}active{% endif %}" href="{{ url_for('giving.list_givings') }}">
-                        <i class="bi bi-cash-coin"></i> Giving
+                        <i class="bi bi-file-earmark-bar-graph"></i> Reports &amp; Analytics
                     </a>
                 </li>
                 <li class="nav-item">
@@ -140,10 +124,6 @@
                     <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
                         <i class="bi bi-moon-fill" id="themeIcon"></i>
                     </button>
-                    <a href="{{ url_for('notifications.list_notifications') }}" class="position-relative text-decoration-none px-2" id="notifDropdown" aria-label="Notifications">
-                        <i class="bi bi-bell fs-5" style="color:var(--text-main)"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge" id="notif-badge">0</span>
-                    </a>
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle py-2" data-bs-toggle="dropdown" aria-label="User menu">
                             {% if current_user.profile_picture %}

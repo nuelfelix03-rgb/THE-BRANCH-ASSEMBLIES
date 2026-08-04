@@ -1,8 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Reports - THE BRANCH ASSEMBLY{% endblock %}
+{% block title %}Reports &amp; Analytics - THE BRANCH ASSEMBLY{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0"><i class="bi bi-file-earmark-bar-graph"></i> Reports</h4>
+    <h4 class="mb-0"><i class="bi bi-bar-chart"></i> Reports &amp; Analytics</h4>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Total Members</div><div class="stat-value">{{ stats.total_members }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Today's Attendance</div><div class="stat-value">{{ stats.today_attendance }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Week Attendance</div><div class="stat-value">{{ stats.week_attendance }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Birthdays (Month)</div><div class="stat-value">{{ stats.birthdays_this_month }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">New Members (Month)</div><div class="stat-value">{{ stats.new_members }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Upcoming Events</div><div class="stat-value">{{ stats.upcoming_events }}</div></div></div>
 </div>
 
 <div class="row">

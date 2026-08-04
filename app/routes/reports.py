@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from flask import Blueprint, render_template, request, Response, send_file
 from flask_login import login_required
 from app import db
-from app.models import Member, Attendance, Ministry
+from app.models import Member, Attendance, Ministry, Event
 from app.utils.decorators import admin_required
 from sqlalchemy import func, case
 
@@ -32,7 +32,33 @@ reports_bp = Blueprint('reports', __name__, url_prefix='/reports')
 @login_required
 @admin_required
 def index():
-    return render_template('reports/index.html')
+    today = date.today()
+    first_of_month = today.replace(day=1)
+    week_start = today - timedelta(days=today.weekday())
+
+    stats = {
+        'total_members': Member.query.filter_by(membership_status='Active').count(),
+        'total_ministries': Ministry.query.count(),
+        'today_attendance': Attendance.query.filter(
+            Attendance.date == today, Attendance.status == 'Present'
+        ).count(),
+        'week_attendance': Attendance.query.filter(
+            Attendance.date >= week_start, Attendance.date <= today,
+            Attendance.status == 'Present'
+        ).count(),
+        'birthdays_this_month': Member.query.filter(
+            db.extract('month', Member.date_of_birth) == today.month,
+            Member.membership_status == 'Active'
+        ).count() if hasattr(db, 'extract') else 0,
+        'new_members': Member.query.filter(
+            Member.date_joined >= first_of_month
+        ).count(),
+        'upcoming_events': Event.query.filter(
+            Event.start_date >= datetime.now(), Event.status == 'Upcoming'
+        ).count(),
+    }
+
+    return render_template('reports/index.html', stats=stats)
 
 
 @reports_bp.route('/members')

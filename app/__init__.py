@@ -36,13 +36,11 @@ def create_app(config_class=Config):
     from app.routes.announcements import announcements_bp
     from app.routes.events import events_bp
     from app.routes.reports import reports_bp
-    from app.routes.notifications import notifications_bp
     from app.routes.main import main_bp
     from app.routes.admin import admin_bp
     from app.routes.settings import settings_bp
     from app.routes.church_info import church_info_bp
     from app.routes.api import api_bp
-    from app.routes.giving import giving_bp
     from app.routes.qr_attendance import qr_bp
     from app.routes.member_profile_ext import profile_ext_bp
     from app.routes.member_search import search_bp
@@ -55,13 +53,11 @@ def create_app(config_class=Config):
     app.register_blueprint(announcements_bp)
     app.register_blueprint(events_bp)
     app.register_blueprint(reports_bp)
-    app.register_blueprint(notifications_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(settings_bp)
     app.register_blueprint(church_info_bp)
     app.register_blueprint(api_bp)
-    app.register_blueprint(giving_bp)
     app.register_blueprint(qr_bp)
     app.register_blueprint(profile_ext_bp)
     app.register_blueprint(search_bp)
@@ -105,7 +101,7 @@ def create_app(config_class=Config):
     # Create tables if they don't exist
     with app.app_context():
         from app import models
-        from app.models_ext import FamilyMember, MemberSkill, MemberDocument, BaptismRecord, Giving, QRCodeAttendance, ServiceSchedule
+        from app.models_ext import FamilyMember, MemberSkill, MemberDocument, BaptismRecord, QRCodeAttendance, ServiceSchedule
         db.create_all()
 
         # Migrate existing tables with new columns (SQLite doesn't auto-alter)
