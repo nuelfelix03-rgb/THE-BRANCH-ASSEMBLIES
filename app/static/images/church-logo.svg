@@ -1,43 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
   <defs>
-    <linearGradient id="flameOuter" x1="0%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#8A2F1D"/>
-      <stop offset="45%" stop-color="#D94816"/>
-      <stop offset="100%" stop-color="#FF3B1F"/>
-    </linearGradient>
-    <linearGradient id="flameMid" x1="0%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#F45A1D"/>
-      <stop offset="100%" stop-color="#FF9F1C"/>
-    </linearGradient>
-    <linearGradient id="flameCore" x1="0%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#FFC55A"/>
-      <stop offset="100%" stop-color="#FFE08A"/>
+    <linearGradient id="flameGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#FF6A00"/>
+      <stop offset="100%" stop-color="#FF1A1A"/>
     </linearGradient>
   </defs>
 
-  <circle cx="128" cy="128" r="118" fill="#FFF7F1"/>
-  <circle cx="128" cy="128" r="118" fill="none" stroke="#C8102E" stroke-width="14"/>
-  <circle cx="128" cy="128" r="92" fill="none" stroke="#C8102E" stroke-width="3" opacity="0.35"/>
+  <!-- Thick red circular ring -->
+  <circle cx="128" cy="128" r="104" fill="none" stroke="#FF0000" stroke-width="18"/>
 
-  <!-- Flame -->
-  <path d="M128 56 C118 76 104 86 100 102 C95 120 102 140 118 148 C112 134 114 118 122 108 C130 96 128 74 128 56 Z"
-        fill="url(#flameOuter)"/>
-  <path d="M128 90 C118 102 112 112 112 124 C112 138 122 148 134 150 C130 138 130 126 134 118 C138 108 134 96 128 90 Z"
-        fill="url(#flameMid)"/>
-  <path d="M128 122 C124 128 120 134 120 140 C120 148 126 154 132 156 C130 148 131 142 133 138 C135 133 132 126 128 122 Z"
-        fill="url(#flameCore)"/>
+  <!-- Flame: larger curved left flame -->
+  <path d="M120 186 C100 158 84 128 80 100 C76 72 90 54 100 46 C112 62 116 90 112 118 C110 142 114 168 126 186 Z"
+        fill="url(#flameGrad)"/>
+
+  <!-- Flame: smaller pointed right flame -->
+  <path d="M126 186 C118 162 112 140 114 116 C116 94 126 78 134 68 C142 86 140 110 136 132 C133 152 134 172 132 186 Z"
+        fill="url(#flameGrad)"/>
 
   <!-- Soil mound -->
-  <path d="M98 178 C104 158 152 158 158 178 C158 182 154 186 128 186 C102 186 98 182 98 178 Z"
-        fill="#7A3B16"/>
-  <path d="M98 178 C104 158 152 158 158 178 L158 181 C158 185 154 189 128 189 C102 189 98 185 98 181 Z"
-        fill="#5C2C10"/>
+  <path d="M84 186 C84 170 104 162 128 162 C152 162 172 170 172 186 Z"
+        fill="#4B1F0A"/>
 
-  <!-- Sprout stem -->
-  <path d="M128 182 C128 162 127 148 127 134" stroke="#3E6B1F" stroke-width="4" stroke-linecap="round" fill="none"/>
-
-  <!-- Sprout leaves -->
-  <path d="M127 140 C112 136 100 142 94 152 C104 154 120 150 127 140 Z" fill="#4E8A25"/>
-  <path d="M127 132 C146 128 158 136 164 146 C152 150 134 144 127 132 Z" fill="#5AA02E"/>
-  <path d="M127 152 C114 150 104 154 99 160 C108 162 120 159 127 152 Z" fill="#3E6B1F"/>
+  <!-- Plant silhouette (black) -->
+  <path d="M126 186 C126 158 126 120 126 96 L130 96 C130 120 130 158 130 186 Z" fill="#000000"/>
+  <path d="M126 108 C110 106 98 112 92 122 C102 126 118 122 126 112 Z" fill="#000000"/>
+  <path d="M130 108 C146 106 158 112 164 122 C154 126 138 122 130 112 Z" fill="#000000"/>
+  <path d="M126 128 C112 128 102 134 97 144 C107 147 120 143 126 134 Z" fill="#000000"/>
+  <path d="M130 128 C144 128 154 134 159 144 C149 147 136 143 130 134 Z" fill="#000000"/>
 </svg>
