@@ -13,7 +13,7 @@
 
 <div class="card border-0 shadow-sm">
     {% if announcement.image %}
-    <img src="{{ url_for('static', filename='announcement_images/' + announcement.image) }}" class="card-img-top" alt="{{ announcement.title }}" style="max-height:400px;object-fit:cover;">
+    <img src="{{ url_for('main.uploaded_file', filename='announcement_images/' + announcement.image) }}" class="card-img-top" alt="{{ announcement.title }}" style="max-height:400px;object-fit:cover;">
     {% endif %}
     <div class="card-body p-4">
         <div class="d-flex align-items-center gap-2 mb-3">

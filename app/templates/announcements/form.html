@@ -40,7 +40,7 @@
                     {{ form.image(class="form-control") }}
                     {% if announcement and announcement.image %}
                     <div class="mt-2 d-flex align-items-center gap-3">
-                        <img src="{{ url_for('static', filename='announcement_images/' + announcement.image) }}" alt="Current image" class="rounded" style="max-height:80px;">
+                        <img src="{{ url_for('main.uploaded_file', filename='announcement_images/' + announcement.image) }}" alt="Current image" class="rounded" style="max-height:80px;">
                         <small class="text-muted">Current image</small>
                     </div>
                     {% endif %}

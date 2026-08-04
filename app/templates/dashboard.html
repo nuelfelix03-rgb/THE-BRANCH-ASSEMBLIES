@@ -120,7 +120,7 @@
                     {% for announcement in recent_announcements %}
                     <div class="dashboard-announcement-card">
                         {% if announcement.image %}
-                        <img src="{{ url_for('static', filename='announcement_images/' + announcement.image) }}" alt="">
+                        <img src="{{ url_for('main.uploaded_file', filename='announcement_images/' + announcement.image) }}" alt="">
                         {% endif %}
                         <div class="flex-grow-1 min-w-0">
                             <div class="d-flex align-items-center gap-2 mb-1">

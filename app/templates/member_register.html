@@ -165,7 +165,7 @@
                     <small class="text-muted">Allowed: JPG, PNG, WebP. Max 300x300px.</small>
                     {% if edit_mode and member and member.profile_picture %}
                     <div class="mt-2">
-                        <img src="{{ url_for('static', filename='uploads/' + member.profile_picture) }}" alt="Profile" class="rounded-circle border" style="width:80px;height:80px;object-fit:cover;">
+                        <img src="{{ url_for('main.uploaded_file', filename='uploads/' + member.profile_picture) }}" alt="Profile" class="rounded-circle border" style="width:80px;height:80px;object-fit:cover;">
                         <a href="{{ url_for('main.remove_my_photo') }}" class="btn btn-sm btn-outline-danger ms-3" onclick="return confirm('Remove photo?')"><i class="bi bi-x-circle me-1"></i>Remove</a>
                     </div>
                     {% endif %}

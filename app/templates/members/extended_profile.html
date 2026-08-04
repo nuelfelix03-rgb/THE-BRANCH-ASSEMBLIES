@@ -123,7 +123,7 @@
                                 <td><small>{{ d.description or '—' }}</small></td>
                                 <td><small class="text-muted">{{ d.uploaded_at.strftime('%b %d') }}</small></td>
                                 <td>
-                                    <a href="{{ url_for('static', filename='member_docs/' + d.file_name) }}" class="btn btn-sm btn-outline-primary py-0" target="_blank"><i class="bi bi-eye"></i></a>
+                                    <a href="{{ url_for('main.uploaded_file', filename='member_docs/' + d.file_name) }}" class="btn btn-sm btn-outline-primary py-0" target="_blank"><i class="bi bi-eye"></i></a>
                                     <a href="{{ url_for('profile_ext.delete_document', id=d.id) }}" class="btn btn-sm btn-outline-danger py-0" onclick="return confirm('Delete?')"><i class="bi bi-trash"></i></a>
                                 </td>
                             </tr>

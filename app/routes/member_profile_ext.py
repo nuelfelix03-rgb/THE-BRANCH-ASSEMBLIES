@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from app import db
 from app.models import Member
 from app.models_ext import FamilyMember, MemberSkill, MemberDocument, BaptismRecord
-from app.utils.helpers import delete_file
+from app.utils.helpers import delete_file, get_upload_base
 
 profile_ext_bp = Blueprint('profile_ext', __name__, url_prefix='/members')
 
@@ -90,7 +90,7 @@ def upload_document(member_id):
         ext = os.path.splitext(file.filename)[1]
         import uuid
         filename = uuid.uuid4().hex + ext
-        doc_dir = os.path.join(current_app.root_path, 'static', 'member_docs')
+        doc_dir = get_upload_base('member_docs')
         os.makedirs(doc_dir, exist_ok=True)
         file.save(os.path.join(doc_dir, filename))
 

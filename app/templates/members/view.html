@@ -18,7 +18,7 @@
         <div class="card text-center">
             <div class="card-body">
                 {% if member.profile_picture %}
-                <img src="{{ url_for('static', filename='uploads/' + member.profile_picture) }}" class="member-avatar mb-3">
+                <img src="{{ url_for('main.uploaded_file', filename='uploads/' + member.profile_picture) }}" class="member-avatar mb-3">
                 {% else %}
                 <div class="member-avatar mb-3 d-inline-flex align-items-center justify-content-center bg-primary-soft">
                     <i class="bi bi-person fs-1 text-primary"></i>

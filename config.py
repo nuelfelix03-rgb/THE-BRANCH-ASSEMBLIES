@@ -62,14 +62,21 @@ class Config:
     # -----------------------------
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-    UPLOAD_FOLDER = os.path.join(
-        BASE_DIR,
-        "app",
-        "static",
-        "uploads"
+    # Base folder that contains user uploads (uploads/, announcement_images/, member_docs/).
+    # Override with UPLOAD_DIR or RENDER_DISK_PATH to point at a PERSISTENT disk
+    # (e.g. a Render Disk) so uploaded files survive every redeploy.
+    UPLOAD_BASE_DIR = os.environ.get(
+        "UPLOAD_DIR",
+        os.environ.get(
+            "RENDER_DISK_PATH",
+            os.path.join(BASE_DIR, "app", "static")
+        )
     )
 
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    UPLOAD_FOLDER = os.path.join(UPLOAD_BASE_DIR, "uploads")
+
+    for _sub in ("uploads", "announcement_images", "member_docs"):
+        os.makedirs(os.path.join(UPLOAD_BASE_DIR, _sub), exist_ok=True)
 
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
 

@@ -6,7 +6,7 @@
         <div class="card-body">
             <div class="login-logo">
                 {% if church_logo %}
-                <img src="{{ url_for('static', filename='uploads/' + church_logo) }}" alt="{{ church_settings.church_name }}" class="rounded-circle" style="object-fit:cover;">
+                <img src="{{ url_for('main.uploaded_file', filename='uploads/' + church_logo) }}" alt="{{ church_settings.church_name }}" class="rounded-circle" style="object-fit:cover;">
                 {% endif %}
                 <h3>THE BRANCH ASSEMBLY INT'L</h3>
                 <p class="text-muted">Sign in to your account</p>

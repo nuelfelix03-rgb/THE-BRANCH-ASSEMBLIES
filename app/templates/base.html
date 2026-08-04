@@ -28,7 +28,7 @@
             <div class="sidebar-header">
                 <a href="{{ url_for('main.dashboard') }}" class="text-decoration-none">
                     {% if church_logo %}
-                    <img src="{{ url_for('static', filename='uploads/' + church_logo) }}" alt="Logo" class="sidebar-logo rounded-circle" style="object-fit:cover;">
+                    <img src="{{ url_for('main.uploaded_file', filename='uploads/' + church_logo) }}" alt="Logo" class="sidebar-logo rounded-circle" style="object-fit:cover;">
                     {% endif %}
                     <h5>{{ church_settings.church_name or "THE BRANCH ASSEMBLY INT'L" }}</h5>
                     <small class="text-muted" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;">{{ current_user.role.replace('_',' ')|upper }}</small>
@@ -116,7 +116,7 @@
                 </button>
                 <span class="navbar-brand d-none d-sm-inline ms-2">
                     {% if church_logo %}
-                    <img src="{{ url_for('static', filename='uploads/' + church_logo) }}" alt="" style="height:28px;width:28px;object-fit:cover;" class="me-2 rounded-circle">
+                    <img src="{{ url_for('main.uploaded_file', filename='uploads/' + church_logo) }}" alt="" style="height:28px;width:28px;object-fit:cover;" class="me-2 rounded-circle">
                     {% endif %}
                     <span class="d-none d-md-inline" style="background:var(--brand-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">{{ church_settings.church_name or "THE BRANCH ASSEMBLY INT'L" }}</span>
                 </span>
@@ -127,7 +127,7 @@
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle py-2" data-bs-toggle="dropdown" aria-label="User menu">
                             {% if current_user.profile_picture %}
-                            <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" alt="" class="rounded-circle me-1" style="width:32px;height:32px;object-fit:cover;">
+                            <img src="{{ url_for('main.uploaded_file', filename='uploads/' + current_user.profile_picture) }}" alt="" class="rounded-circle me-1" style="width:32px;height:32px;object-fit:cover;">
                             {% else %}
                             <i class="bi bi-person-circle fs-4 me-1"></i>
                             {% endif %}

@@ -14,9 +14,9 @@
             <div class="card-body p-4">
                 <div class="position-relative d-inline-block mb-3">
                     {% if member and member.profile_picture %}
-                    <img src="{{ url_for('static', filename='uploads/' + member.profile_picture) }}" alt="Profile" class="rounded-circle border border-3" style="width:130px;height:130px;object-fit:cover;">
+                    <img src="{{ url_for('main.uploaded_file', filename='uploads/' + member.profile_picture) }}" alt="Profile" class="rounded-circle border border-3" style="width:130px;height:130px;object-fit:cover;">
                     {% elif current_user.profile_picture %}
-                    <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" alt="Profile" class="rounded-circle border border-3" style="width:130px;height:130px;object-fit:cover;">
+                    <img src="{{ url_for('main.uploaded_file', filename='uploads/' + current_user.profile_picture) }}" alt="Profile" class="rounded-circle border border-3" style="width:130px;height:130px;object-fit:cover;">
                     {% else %}
                     <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center border border-3" style="width:130px;height:130px;">
                         <i class="bi bi-person-fill" style="font-size:3.5rem;color:#adb5bd;"></i>

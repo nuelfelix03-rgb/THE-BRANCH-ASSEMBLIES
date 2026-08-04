@@ -87,7 +87,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
                 {% if church_logo %}
-                <img src="{{ url_for('static', filename='uploads/' + church_logo) }}" alt="" style="height:32px;width:32px;object-fit:cover;" class="me-2 rounded-circle">
+                <img src="{{ url_for('main.uploaded_file', filename='uploads/' + church_logo) }}" alt="" style="height:32px;width:32px;object-fit:cover;" class="me-2 rounded-circle">
                 {% endif %}
                 {{ church_settings.church_name or "THE BRANCH ASSEMBLY INT'L" }}
             </a>
@@ -106,7 +106,7 @@
     <section class="hero text-center">
         <div class="container position-relative">
             {% if church_logo %}
-            <img src="{{ url_for('static', filename='uploads/' + church_logo) }}" alt="" class="hero-logo rounded-circle" style="object-fit:cover;">
+            <img src="{{ url_for('main.uploaded_file', filename='uploads/' + church_logo) }}" alt="" class="hero-logo rounded-circle" style="object-fit:cover;">
             {% endif %}
             <h1 class="display-4 fw-bold mb-3">{{ church_settings.church_name or "THE BRANCH ASSEMBLY INT'L" }}</h1>
             {% if church_settings.welcome_message %}

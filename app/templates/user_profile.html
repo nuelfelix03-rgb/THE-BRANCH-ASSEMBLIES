@@ -11,9 +11,9 @@
         <div class="card text-center h-100">
             <div class="card-body">
                 {% if profile_user.role == 'member' and member and member.profile_picture %}
-                <img src="{{ url_for('static', filename='uploads/' + member.profile_picture) }}" class="member-avatar mb-3">
+                <img src="{{ url_for('main.uploaded_file', filename='uploads/' + member.profile_picture) }}" class="member-avatar mb-3">
                 {% elif profile_user.profile_picture %}
-                <img src="{{ url_for('static', filename='uploads/' + profile_user.profile_picture) }}" class="member-avatar mb-3">
+                <img src="{{ url_for('main.uploaded_file', filename='uploads/' + profile_user.profile_picture) }}" class="member-avatar mb-3">
                 {% else %}
                 <div class="mb-3 d-inline-block">
                     <i class="bi bi-person-circle" style="font-size:100px;color:var(--fire);"></i>
