@@ -17,11 +17,23 @@
                 </div>
                 {% endif %}
 
+                <button type="button" class="btn btn-outline-primary btn-lg w-100 mb-3" id="scanBtn" onclick="toggleScanner()">
+                    <i class="bi bi-camera me-1"></i> Scan QR with Camera
+                </button>
+
+                <div id="scannerWrap" class="d-none mb-3">
+                    <div id="reader" class="mx-auto" style="max-width:100%;"></div>
+                    <p class="text-muted small text-center mt-2">Point your camera at your membership QR code.</p>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-sm btn-link" onclick="toggleScanner()">Cancel scan</button>
+                    </div>
+                </div>
+
                 <form method="POST" action="{{ url_for('qr_attendance.self_checkin') }}">
                     <input type="hidden" name="service_type" value="{{ service }}">
                     <div class="mb-3">
                         <label class="form-label fw-medium text-start d-block">Member ID</label>
-                        <input type="text" name="member_id" class="form-control form-control-lg text-center"
+                        <input type="text" name="member_id" id="memberIdInput" class="form-control form-control-lg text-center"
                                placeholder="CH-2026-XXXX" autocomplete="off" autofocus required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-lg w-100 py-2">
@@ -29,9 +41,58 @@
                     </button>
                 </form>
 
-                <p class="text-muted small mt-4 mb-0">Scan your personal QR code or type your Member ID above.</p>
+                <p class="text-muted small mt-4 mb-0">Scan your personal QR code with the camera, or type your Member ID above.</p>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+let scanner = null;
+
+function parseMemberId(text) {
+    const s = (text || '').trim();
+    const m = s.match(/CHURCH:(\S+)/i);
+    return m ? m[1] : s;
+}
+
+function toggleScanner() {
+    const wrap = document.getElementById('scannerWrap');
+    const btn = document.getElementById('scanBtn');
+    if (!scanner || !wrap.classList.contains('d-none')) {
+        stopScanner();
+        return;
+    }
+    wrap.classList.remove('d-none');
+    btn.classList.add('d-none');
+    scanner = new Html5Qrcode('reader');
+    scanner.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 220, height: 220 } },
+        (decodedText) => {
+            document.getElementById('memberIdInput').value = parseMemberId(decodedText);
+            stopScanner();
+            document.querySelector('form').requestSubmit();
+        },
+        () => {}
+    ).catch((err) => {
+        wrap.innerHTML = '<div class="alert alert-warning py-2 small">Could not open camera: ' +
+            err + '<br>Please type your Member ID instead.</div>';
+        btn.classList.remove('d-none');
+    });
+}
+
+function stopScanner() {
+    if (scanner) {
+        try { scanner.stop().then(() => scanner.clear()); } catch (e) {}
+        scanner = null;
+    }
+    const wrap = document.getElementById('scannerWrap');
+    if (wrap) wrap.classList.add('d-none');
+    const btn = document.getElementById('scanBtn');
+    if (btn) btn.classList.remove('d-none');
+}
+</script>
 {% endblock %}
