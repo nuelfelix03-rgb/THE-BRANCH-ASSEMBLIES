@@ -40,13 +40,28 @@
             <div class="col-md-6">
                 <label class="form-label fw-medium">Service</label>
                 <select id="serviceQrSelect" class="form-select">
-                    {% for s in services %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+                    {% for s in services %}<option value="{{ s.id }}" data-name="{{ s.name }}">{{ s.name }}</option>{% endfor %}
                 </select>
             </div>
             <div class="col-md-6">
-                <button type="button" class="btn btn-primary" id="serviceQrBtn" onclick="openServiceQr()">
-                    <i class="bi bi-qr-code me-1"></i> Show / Print QR
+                <button type="button" class="btn btn-primary" id="serviceQrBtn" onclick="showServiceQr()">
+                    <i class="bi bi-qr-code me-1"></i> Generate Entrance QR
                 </button>
+            </div>
+        </div>
+
+        <div id="serviceQrPreview" class="text-center mt-4 d-none">
+            <div class="border rounded p-3 d-inline-block bg-white">
+                <img id="qrPreviewImg" src="" alt="Service QR" style="width:220px;height:220px;object-fit:contain;">
+                <div class="small fw-bold mt-2" id="qrPreviewService"></div>
+            </div>
+            <div class="mt-3">
+                <div class="input-group mx-auto" style="max-width:420px;">
+                    <input type="text" id="qrPublicLink" class="form-control text-truncate" readonly>
+                    <button class="btn btn-outline-secondary" type="button" onclick="copyQrLink()"><i class="bi bi-clipboard me-1"></i>Copy</button>
+                    <a class="btn btn-outline-primary" id="qrOpen" target="_blank" title="Open check-in page"><i class="bi bi-box-arrow-up-right"></i></a>
+                </div>
+                <small class="text-muted d-block mt-2">Share this link too — members can open it without scanning.</small>
             </div>
         </div>
     </div>
@@ -79,11 +94,33 @@ function doCheckin() {
 btn.addEventListener('click', doCheckin);
 input.addEventListener('keydown', e => { if (e.key === 'Enter') doCheckin(); });
 
-function openServiceQr() {
+function showServiceQr() {
     const sel = document.getElementById('serviceQrSelect');
     const id = sel.options[sel.selectedIndex].value;
-    const base = '{{ url_for("qr_attendance.service_qr", service_id=0) }}'.replace('/0', '/');
-    window.open(base + id, '_blank');
+    const name = sel.options[sel.selectedIndex].dataset.name;
+    const qrBase = '{{ url_for("qr_attendance.service_qr", service_id=0) }}'.replace('/0', '/');
+    const linkTemplate = '{{ url_for("qr_attendance.self_checkin", service="__SVC__") }}';
+
+    document.getElementById('qrPreviewImg').src = qrBase + id;
+    document.getElementById('qrPreviewService').textContent = name || '';
+    const pub = linkTemplate.replace('__SVC__', encodeURIComponent(name || ''));
+    document.getElementById('qrPublicLink').value = pub;
+    document.getElementById('qrOpen').href = pub;
+    document.getElementById('serviceQrPreview').classList.remove('d-none');
 }
+
+function copyQrLink() {
+    const el = document.getElementById('qrPublicLink');
+    el.select();
+    navigator.clipboard.writeText(el.value).then(() => {
+        const btn = document.querySelector('#serviceQrPreview button');
+        const old = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Copied';
+        setTimeout(() => { btn.innerHTML = old; }, 1500);
+    });
+}
+
+document.getElementById('serviceQrSelect').addEventListener('change', showServiceQr);
+showServiceQr();
 </script>
 {% endblock %}
