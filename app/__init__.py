@@ -94,8 +94,13 @@ def create_app(config_class=Config):
 
     @app.context_processor
     def inject_settings():
-        from app.models import ChurchSettings
-        return {"church_settings": ChurchSettings.get_settings()}
+        from app.models import ChurchSettings, User
+        settings = ChurchSettings.get_settings()
+        admin = User.query.filter(User.role.in_(['super_admin', 'admin'])).order_by(User.id).first()
+        return {
+            "church_settings": settings,
+            "church_logo": admin.profile_picture if admin and admin.profile_picture else None,
+        }
 
     # Create tables if they don't exist
     with app.app_context():
