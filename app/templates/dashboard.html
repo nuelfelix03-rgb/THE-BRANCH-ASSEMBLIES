@@ -77,7 +77,7 @@
             </div>
             <div class="card-body">
                 <div class="chart-container">
-                    <canvas id="growthChart"></canvas>
+                    <canvas id="growthChart" data-labels='{{ monthly_growth.labels | tojson | safe }}' data-values='{{ monthly_growth.data | tojson | safe }}'></canvas>
                 </div>
             </div>
         </div>
@@ -167,5 +167,6 @@ new Chart(ctx, {
         }
     }
 });
+
 </script>
 {% endblock %}
