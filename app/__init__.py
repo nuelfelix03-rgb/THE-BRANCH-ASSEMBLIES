@@ -101,7 +101,7 @@ def create_app(config_class=Config):
     # Create tables if they don't exist
     with app.app_context():
         from app import models
-        from app.models_ext import FamilyMember, MemberSkill, MemberDocument, BaptismRecord, QRCodeAttendance, ServiceSchedule
+        from app.models_ext import FamilyMember, MemberSkill, MemberDocument, BaptismRecord, QRCodeAttendance, ServiceSchedule, UploadedImage
         db.create_all()
 
         # Migrate existing tables with new columns (SQLite doesn't auto-alter)

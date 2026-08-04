@@ -1,54 +1,62 @@
 import os
+import io
 import uuid
 from datetime import date, timedelta, datetime
 from PIL import Image
 from flask import current_app
-
-
-def get_upload_base(subdir='uploads'):
-    base = current_app.config.get('UPLOAD_BASE_DIR') or os.path.join(current_app.root_path, 'static')
-    d = os.path.join(base, subdir)
-    os.makedirs(d, exist_ok=True)
-    return d
+from app import db
 
 
 def save_profile_picture(form_picture):
-    random_filename = uuid.uuid4().hex
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_filename = random_filename + f_ext
-    picture_path = os.path.join(get_upload_base('uploads'), picture_filename)
-
-    os.makedirs(os.path.dirname(picture_path), exist_ok=True)
-
-    output_size = (300, 300)
+    from app.models_ext import UploadedImage
     img = Image.open(form_picture)
-    img.thumbnail(output_size)
-    img.save(picture_path)
-
-    return picture_filename
+    img.thumbnail((300, 300))
+    buf = io.BytesIO()
+    filename = (form_picture.filename or '').lower()
+    fmt = 'PNG' if filename.endswith('.png') else 'JPEG'
+    if fmt == 'JPEG' and img.mode in ('RGBA', 'P', 'LA'):
+        img = img.convert('RGB')
+    img.save(buf, format=fmt)
+    token = uuid.uuid4().hex
+    row = UploadedImage(
+        token=token,
+        data=buf.getvalue(),
+        mimetype='image/png' if fmt == 'PNG' else 'image/jpeg'
+    )
+    db.session.add(row)
+    return token
 
 
 def save_announcement_image(form_image):
-    random_filename = uuid.uuid4().hex
-    _, f_ext = os.path.splitext(form_image.filename)
-    image_filename = random_filename + f_ext
-    image_path = os.path.join(get_upload_base('announcement_images'), image_filename)
-
-    os.makedirs(os.path.dirname(image_path), exist_ok=True)
-
+    from app.models_ext import UploadedImage
     img = Image.open(form_image)
     img.thumbnail((1200, 1200))
-    img.save(image_path)
-
-    return image_filename
+    buf = io.BytesIO()
+    filename = (form_image.filename or '').lower()
+    fmt = 'PNG' if filename.endswith('.png') else 'JPEG'
+    if fmt == 'JPEG' and img.mode in ('RGBA', 'P', 'LA'):
+        img = img.convert('RGB')
+    img.save(buf, format=fmt)
+    token = uuid.uuid4().hex
+    row = UploadedImage(
+        token=token,
+        data=buf.getvalue(),
+        mimetype='image/png' if fmt == 'PNG' else 'image/jpeg'
+    )
+    db.session.add(row)
+    return token
 
 
 def delete_file(filename, subdir='uploads'):
+    # 'filename' is a DB token (or a token with a category prefix). Delete the stored row.
     if not filename:
         return
-    path = os.path.join(get_upload_base(subdir), filename)
-    if os.path.exists(path):
-        os.remove(path)
+    from app.models_ext import UploadedImage
+    token = filename.split('/')[-1]
+    row = UploadedImage.query.filter_by(token=token).first()
+    if row:
+        db.session.delete(row)
+        db.session.commit()
 
 
 def generate_member_id():

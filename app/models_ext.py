@@ -2,6 +2,16 @@ from datetime import datetime, date
 from app import db
 
 
+class UploadedImage(db.Model):
+    __tablename__ = 'uploaded_images'
+
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(64), unique=True, index=True)
+    data = db.Column(db.LargeBinary)
+    mimetype = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class FamilyMember(db.Model):
     __tablename__ = 'family_members'
 

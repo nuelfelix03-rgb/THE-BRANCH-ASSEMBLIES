@@ -1,6 +1,6 @@
 from datetime import date, timedelta, datetime
-import os
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_from_directory
+import os, io
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_file, abort
 from flask_login import login_required, current_user
 from app import db
 from app.models import Member, Attendance, Ministry, Event, Announcement, User, ChurchInformation
@@ -13,8 +13,12 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/uploads/<path:filename>')
 def uploaded_file(filename):
-    base = current_app.config.get('UPLOAD_BASE_DIR') or os.path.join(current_app.root_path, 'static')
-    return send_from_directory(base, filename)
+    from app.models_ext import UploadedImage
+    token = filename.split('/')[-1]
+    row = UploadedImage.query.filter_by(token=token).first()
+    if not row or not row.data:
+        abort(404)
+    return send_file(io.BytesIO(row.data), mimetype=row.mimetype or 'application/octet-stream')
 
 
 @main_bp.route('/')

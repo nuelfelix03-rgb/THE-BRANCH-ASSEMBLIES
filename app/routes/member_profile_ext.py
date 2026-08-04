@@ -1,11 +1,10 @@
-import os
 from datetime import date
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app import db
 from app.models import Member
 from app.models_ext import FamilyMember, MemberSkill, MemberDocument, BaptismRecord
-from app.utils.helpers import delete_file, get_upload_base
+from app.utils.helpers import delete_file
 
 profile_ext_bp = Blueprint('profile_ext', __name__, url_prefix='/members')
 
@@ -87,17 +86,20 @@ def upload_document(member_id):
     member = Member.query.get_or_404(member_id)
     file = request.files.get('document_file')
     if file and file.filename:
-        ext = os.path.splitext(file.filename)[1]
         import uuid
-        filename = uuid.uuid4().hex + ext
-        doc_dir = get_upload_base('member_docs')
-        os.makedirs(doc_dir, exist_ok=True)
-        file.save(os.path.join(doc_dir, filename))
+        from app.models_ext import UploadedImage
+        token = uuid.uuid4().hex
+        row = UploadedImage(
+            token=token,
+            data=file.read(),
+            mimetype=file.mimetype or 'application/octet-stream'
+        )
+        db.session.add(row)
 
         doc = MemberDocument(
             member_id=member.id,
             document_type=request.form.get('document_type', 'Other'),
-            file_name=filename,
+            file_name=token,
             description=request.form.get('description', '')
         )
         db.session.add(doc)
