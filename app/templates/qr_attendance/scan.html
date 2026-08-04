@@ -40,7 +40,11 @@
             <div class="col-md-6">
                 <label class="form-label fw-medium">Service</label>
                 <select id="serviceQrSelect" class="form-select">
-                    {% for s in services %}<option value="{{ s.id }}" data-name="{{ s.name }}">{{ s.name }}</option>{% endfor %}
+                    {% if services %}
+                        {% for s in services %}<option value="{{ s.name }}">{{ s.name }}</option>{% endfor %}
+                    {% else %}
+                        <option>Sunday Service</option><option>Bible Study</option><option>Prayer Meeting</option><option>Midweek Service</option>
+                    {% endif %}
                 </select>
             </div>
             <div class="col-md-6">
@@ -96,14 +100,15 @@ input.addEventListener('keydown', e => { if (e.key === 'Enter') doCheckin(); });
 
 function showServiceQr() {
     const sel = document.getElementById('serviceQrSelect');
-    const id = sel.options[sel.selectedIndex].value;
-    const name = sel.options[sel.selectedIndex].dataset.name;
-    const qrBase = '{{ url_for("qr_attendance.service_qr", service_id=0) }}'.replace('/0', '/');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt || !opt.value) return;
+    const name = opt.value;
+    const qrUrl = '{{ url_for("qr_attendance.service_qr") }}';
     const linkTemplate = '{{ url_for("qr_attendance.self_checkin", service="__SVC__") }}';
 
-    document.getElementById('qrPreviewImg').src = qrBase + id;
-    document.getElementById('qrPreviewService').textContent = name || '';
-    const pub = linkTemplate.replace('__SVC__', encodeURIComponent(name || ''));
+    document.getElementById('qrPreviewImg').src = qrUrl + '?name=' + encodeURIComponent(name);
+    document.getElementById('qrPreviewService').textContent = name;
+    const pub = linkTemplate.replace('__SVC__', encodeURIComponent(name));
     document.getElementById('qrPublicLink').value = pub;
     document.getElementById('qrOpen').href = pub;
     document.getElementById('serviceQrPreview').classList.remove('d-none');

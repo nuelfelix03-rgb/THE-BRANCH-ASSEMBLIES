@@ -22,12 +22,12 @@ def generate_member_qr(member):
     return buf
 
 
-@qr_bp.route('/service-qr/<int:service_id>')
+@qr_bp.route('/service-qr')
 @login_required
 @role_required(*ADMIN_ROLES)
-def service_qr(service_id):
-    s = ServiceSchedule.query.get_or_404(service_id)
-    url = url_for('qr_attendance.self_checkin', service=s.name, _external=True)
+def service_qr():
+    name = request.args.get('name', 'Sunday Service').strip() or 'Sunday Service'
+    url = url_for('qr_attendance.self_checkin', service=name, _external=True)
     qr = qrcode.QRCode(box_size=12, border=2)
     qr.add_data(url)
     qr.make(fit=True)
