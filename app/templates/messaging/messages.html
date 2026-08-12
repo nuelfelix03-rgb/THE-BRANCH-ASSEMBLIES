@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Message Members - THE BRANCH ASSEMBLY{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0 fw-bold"><i class="bi bi-envelope-paper me-2"></i>Message Members</h4>
+    <a href="{{ url_for('messaging.birthdays') }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-balloon-heart me-1"></i> Birthdays
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <h5 class="fw-bold mb-1">Compose Email / SMS</h5>
+        <p class="text-muted small">Send a message to your active members or to those celebrating birthdays.</p>
+
+        <form method="POST" action="{{ url_for('messaging.send_messages') }}">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Who do you want to reach?</label>
+                    <select name="audience" class="form-select" required>
+                        <option value="all">All active members</option>
+                        <option value="birthdays_month">Members with birthdays this month</option>
+                        <option value="birthdays">Only members whose birthday is today</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">How should we send it?</label>
+                    <select name="channel" class="form-select" required>
+                        <option value="email">Email</option>
+                        <option value="sms">SMS (text message)</option>
+                        <option value="both">Email + SMS</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-medium">Subject</label>
+                    <input type="text" name="subject" class="form-control" placeholder="e.g. Special Service this Sunday" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-medium">Message</label>
+                    <textarea name="body" class="form-control" rows="6" placeholder="Type your message here..." required></textarea>
+                    <div class="form-text">For SMS, only the first 160 characters are delivered.</div>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary"><i class="bi bi-send me-1"></i> Send Message</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-4">
+        <h6 class="fw-bold"><i class="bi bi-info-circle me-1"></i>Setup notes</h6>
+        <ul class="text-muted small mb-0">
+            <li><strong>Email</strong> uses the SMTP account configured in <code>.env</code> (<code>MAIL_*</code> variables). Set <code>MAIL_USERNAME</code>, <code>MAIL_PASSWORD</code>, and <code>MAIL_DEFAULT_SENDER</code> to enable sending.</li>
+            <li><strong>SMS</strong> is sent through an SMS gateway via <code>SMS_API_URL</code> and <code>SMS_API_KEY</code> in <code>.env</code>. Until configured, SMS is logged to the console instead of being sent.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

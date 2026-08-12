@@ -45,6 +45,7 @@ def create_app(config_class=Config):
     from app.routes.member_profile_ext import profile_ext_bp
     from app.routes.member_search import search_bp
     from app.routes.dashboard_ext import dash_ext_bp
+    from app.routes.messaging import msg_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(members_bp)
@@ -62,6 +63,7 @@ def create_app(config_class=Config):
     app.register_blueprint(profile_ext_bp)
     app.register_blueprint(search_bp)
     app.register_blueprint(dash_ext_bp)
+    app.register_blueprint(msg_bp)
 
     # Session configuration
     if app.config.get("SERVER_NAME"):
@@ -133,5 +135,23 @@ def create_app(config_class=Config):
             db.session.commit()
         except Exception:
             db.session.rollback()
+
+    # Daily birthday-wish job (a): run via cron / task scheduler once per day.
+    #   flask birthday-wishes           -> send emails + notify admins
+    #   flask birthday-wishes --dry-run -> preview without sending
+    import click
+
+    @app.cli.command('birthday-wishes')
+    @click.option('--dry-run', is_flag=True, help='Preview who would be emailed without sending.')
+    def birthday_wishes_command(dry_run):
+        from app.utils.birthday_service import ensure_today_notifications, send_birthday_emails
+        created = ensure_today_notifications()
+        sent, skipped = send_birthday_emails(dry_run=dry_run)
+        if dry_run:
+            click.echo(f'[dry-run] Would send {sent} birthday email(s), skip {skipped} (no email).')
+            click.echo(f'[dry-run] Would create {created} admin notification(s).')
+        else:
+            click.echo(f'Sent {sent} birthday email(s), skipped {skipped} (no email).')
+            click.echo(f'Created {created} admin notification(s).')
 
     return app

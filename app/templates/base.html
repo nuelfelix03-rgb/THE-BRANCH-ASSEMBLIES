@@ -90,6 +90,16 @@
                         <i class="bi bi-search"></i> Search
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'messaging.birthdays' %}active{% endif %}" href="{{ url_for('messaging.birthdays') }}">
+                        <i class="bi bi-balloon-heart"></i> Birthdays
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'messaging.messages' %}active{% endif %}" href="{{ url_for('messaging.messages') }}">
+                        <i class="bi bi-envelope-paper"></i> Messages
+                    </a>
+                </li>
                 {% endif %}
                 {% if current_user.role == 'super_admin' %}
                 <li class="nav-item mt-2">
@@ -121,6 +131,16 @@
                     <span class="d-none d-md-inline" style="background:var(--brand-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;">{{ church_settings.church_name or "THE BRANCH ASSEMBLY INT'L" }}</span>
                 </span>
                 <div class="ms-auto d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none position-relative py-2" data-bs-toggle="dropdown" aria-label="Notifications" onclick="loadNotifications()">
+                            <i class="bi bi-bell fs-5"></i>
+                            <span id="notifBadge" class="badge rounded-pill bg-danger d-none position-absolute" style="top:0;right:-6px;font-size:9px;"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm p-0" style="width:320px;max-height:400px;overflow:auto;">
+                            <li><h6 class="dropdown-header m-0">Notifications</h6></li>
+                            <li><div id="notifList" class="px-3 py-2 text-muted">Loading...</div></li>
+                        </ul>
+                    </div>
                     <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
                         <i class="bi bi-moon-fill" id="themeIcon"></i>
                     </button>
@@ -213,6 +233,58 @@
             }
         });
     });
+
+    // Notifications bell
+    const notifBase = '{{ url_for("messaging.web_notifications") }}';
+    const notifReadBase = '{{ url_for("messaging.web_mark_read", notification_id=0) }}';
+
+    function notifUnread() {
+        fetch('{{ url_for("messaging.web_unread_count") }}', { headers: { 'Accept': 'application/json' } })
+            .then(r => r.json())
+            .then(d => {
+                const badge = document.getElementById('notifBadge');
+                if (d.count > 0) {
+                    badge.textContent = d.count > 99 ? '99+' : d.count;
+                    badge.classList.remove('d-none');
+                } else {
+                    badge.classList.add('d-none');
+                }
+            })
+            .catch(() => {});
+    }
+
+    function loadNotifications() {
+        const list = document.getElementById('notifList');
+        list.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading...';
+        fetch(notifBase, { headers: { 'Accept': 'application/json' } })
+            .then(r => r.json())
+            .then(d => {
+                if (!d.notifications.length) {
+                    list.innerHTML = '<span class="text-muted">You&rsquo;re all caught up!</span>';
+                    return;
+                }
+                list.innerHTML = '';
+                d.notifications.forEach(n => {
+                    const item = document.createElement('div');
+                    item.className = 'd-flex flex-column border-bottom py-2' + (n.is_read ? '' : ' fw-medium');
+                    item.innerHTML =
+                        '<span>' + n.title + '</span>' +
+                        '<small class="text-muted fw-normal">' + n.message + '</small>' +
+                        '<small class="text-muted fw-normal">' + n.created_at + '</small>';
+                    if (!n.is_read) {
+                        item.addEventListener('click', () => {
+                            fetch(notifReadBase.replace('/0', '/' + n.id), { method: 'POST' })
+                                .then(() => { item.classList.remove('fw-medium'); notifUnread(); });
+                        });
+                    }
+                    list.appendChild(item);
+                });
+            })
+            .catch(() => { list.innerHTML = '<span class="text-muted">Could not load notifications.</span>'; });
+    }
+
+    notifUnread();
+    setInterval(notifUnread, 30000);
     </script>
 </body>
 </html>

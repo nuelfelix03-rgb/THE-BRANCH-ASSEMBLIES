@@ -58,6 +58,12 @@ class Config:
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
 
     # -----------------------------
+    # SMS
+    # -----------------------------
+    SMS_API_URL = os.environ.get("SMS_API_URL")
+    SMS_API_KEY = os.environ.get("SMS_API_KEY")
+
+    # -----------------------------
     # Uploads
     # -----------------------------
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
