@@ -52,7 +52,8 @@
     <div class="card-body p-4">
         <h6 class="fw-bold"><i class="bi bi-info-circle me-1"></i>Setup notes</h6>
         <ul class="text-muted small mb-0">
-            <li><strong>Email</strong> uses the SMTP account configured in <code>.env</code> (<code>MAIL_*</code> variables). Set <code>MAIL_USERNAME</code>, <code>MAIL_PASSWORD</code>, and <code>MAIL_DEFAULT_SENDER</code> to enable sending.</li>
+            <li>Messages are delivered to each member's <strong>user account email</strong> (the address they log in with). A member must have an email on file that matches their login account for the message to be delivered.</li>
+            <li><strong>Email</strong> is sent through the SMTP account in <code>.env</code>. Set <code>MAIL_USERNAME</code> to a real Gmail address and <code>MAIL_PASSWORD</code> to that Gmail's <strong>App Password</strong> (Gmail &gt; Google Account &gt; Security &gt; App passwords), then set <code>MAIL_DEFAULT_SENDER</code> to the same address. Until then, sends will fail and you&rsquo;ll see the error message.</li>
             <li><strong>SMS</strong> is sent through an SMS gateway via <code>SMS_API_URL</code> and <code>SMS_API_KEY</code> in <code>.env</code>. Until configured, SMS is logged to the console instead of being sent.</li>
         </ul>
     </div>

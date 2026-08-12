@@ -10,9 +10,10 @@ from app.utils.birthday_service import (
     get_birthdays_in_month,
     get_todays_birthdays,
     get_upcoming_birthdays,
+    resolve_delivery_email,
     send_birthday_emails,
 )
-from app.utils.notifications import send_birthday_wish, send_email, send_sms
+from app.utils.notifications import send_email_sync, send_sms
 from app.utils.roles import ADMIN_ROLES, role_required
 
 msg_bp = Blueprint('messaging', __name__)
@@ -43,11 +44,19 @@ def send_birthday():
     member = Member.query.get_or_404(member_id)
     sent = []
     if channel in ('email', 'both'):
-        if member.email:
-            send_birthday_wish(member)
-            sent.append('email')
+        to_email = resolve_delivery_email(member)
+        if to_email:
+            ok, err = send_email_sync(
+                'Happy Birthday!',
+                [to_email],
+                f'Dear {member.full_name()},\n\nWishing you a blessed birthday! May God continue to shower you with His love and grace.\n\nWith love,\n{current_user.username}'
+            )
+            if ok:
+                sent.append('email')
+            else:
+                flash(f'Email to {member.full_name()} failed: {err}', 'danger')
         else:
-            flash(f'{member.full_name()} has no email address on file.', 'warning')
+            flash(f'{member.full_name()} has no linked user account with an email.', 'warning')
     if channel in ('sms', 'both'):
         if member.phone_number:
             text = f"Happy Birthday {member.first_name}! Wishing you a blessed day."
@@ -99,11 +108,21 @@ def send_messages():
     else:
         members = Member.query.filter_by(membership_status='Active').all()
 
-    email_count = sms_count = no_contact = 0
+    email_count = sms_count = no_contact = failed = 0
+    first_error = None
     for m in members:
-        if channel in ('email', 'both') and m.email:
-            send_email(subject, [m.email], body)
-            email_count += 1
+        if channel in ('email', 'both'):
+            to_email = resolve_delivery_email(m)
+            if to_email:
+                ok, err = send_email_sync(subject, [to_email], body)
+                if ok:
+                    email_count += 1
+                else:
+                    failed += 1
+                    if first_error is None:
+                        first_error = err
+            else:
+                no_contact += 1
         if channel in ('sms', 'both'):
             if m.phone_number:
                 send_sms(m.phone_number, f"{subject}\n{body[:160]}")
@@ -113,8 +132,12 @@ def send_messages():
 
     result = f'Sent {email_count} email(s) and {sms_count} SMS to {len(members)} recipient(s).'
     if no_contact:
-        result += f' {no_contact} skipped (no phone number).'
-    flash(result, 'success')
+        result += f' {no_contact} skipped (no linked user email or phone).'
+    if failed:
+        result += f' {failed} email(s) FAILED to send.'
+    flash(result, 'success' if failed == 0 else 'warning')
+    if first_error:
+        flash(f'Last error: {first_error}', 'danger')
     return redirect(url_for('messaging.messages'))
 
 

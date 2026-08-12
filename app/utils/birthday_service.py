@@ -46,6 +46,23 @@ def get_birthdays_in_month(month=None, year=None):
     ]
 
 
+def resolve_delivery_email(member):
+    """Find the User account linked to this member and return its email.
+
+    Members and login accounts are separate records linked by a matching email
+    address. Messages are delivered to the User account's email so they arrive
+    at the address the member actually logs in with.
+    """
+    if not member.email:
+        return None
+    user = User.query.filter(
+        db.func.lower(User.email) == member.email.lower()
+    ).first()
+    if user and user.email:
+        return user.email
+    return None
+
+
 def get_upcoming_birthdays(days=30):
     today = date.today()
     end = today + timedelta(days=days)
@@ -90,16 +107,20 @@ def ensure_today_notifications():
 
 
 def send_birthday_emails(dry_run=False):
-    """Send a birthday-wish email to every active member whose birthday is today."""
+    """Send a birthday-wish email to every active member whose birthday is today.
+
+    Emails go to the member's linked User account email address.
+    """
     from app.utils.notifications import send_birthday_wish
 
     birthdays = get_todays_birthdays()
     sent = skipped = 0
     for m in birthdays:
-        if not m.email:
+        to_email = resolve_delivery_email(m)
+        if not to_email:
             skipped += 1
             continue
         if not dry_run:
-            send_birthday_wish(m)
+            send_birthday_wish(m, to_email=to_email)
         sent += 1
     return sent, skipped

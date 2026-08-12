@@ -20,8 +20,31 @@ def send_email(subject, recipients, text_body, html_body=None):
     Thread(target=send_async_email, args=(app, msg)).start()
 
 
-def send_birthday_wish(member):
-    if not member.email:
+def send_email_sync(subject, recipients, text_body, html_body=None):
+    """Send an email in the current request and return (success, error_message).
+
+    Used where the admin needs immediate feedback about whether the message
+    was actually delivered.
+    """
+    try:
+        app = current_app._get_current_object()
+        with app.app_context():
+            mail = current_app.extensions.get('mail')
+            if not mail:
+                return False, 'Email service is not configured.'
+            msg = Message(subject, recipients=recipients)
+            msg.body = text_body
+            if html_body:
+                msg.html = html_body
+            mail.send(msg)
+            return True, None
+    except Exception as e:
+        return False, str(e)
+
+
+def send_birthday_wish(member, to_email=None):
+    email = to_email or member.email
+    if not email:
         return
     subject = 'Happy Birthday!'
     text_body = f'Dear {member.full_name()},\n\nWishing you a blessed birthday! May God continue to shower you with His love and grace.\n\nWith love,\n{member.email}'
@@ -33,7 +56,7 @@ def send_birthday_wish(member):
         <hr style="border:none;border-top:1px solid #eee;">
         <p style="color:#888;font-size:12px;">{current_app.config.get("CHURCH_NAME", "The Church")}</p>
     </div>'''
-    send_email(subject, [member.email], text_body, html_body)
+    send_email(subject, [email], text_body, html_body)
 
 
 def send_event_reminder(event, recipients):
