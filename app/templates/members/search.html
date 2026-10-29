@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Search Members{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0 fw-bold"><i class="bi bi-search me-2"></i>Search Members</h4>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-2">
+            <div class="col-md-4">
+                <label class="form-label small fw-medium">Search</label>
+                <input type="text" name="q" class="form-control" placeholder="Name, ID, phone, email..." value="{{ q }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-medium">Gender</label>
+                <select name="gender" class="form-select">
+                    <option value="">All</option>
+                    <option value="Male" {% if gender == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if gender == 'Female' %}selected{% endif %}>Female</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-medium">Ministry</label>
+                <select name="ministry_id" class="form-select">
+                    <option value="">All</option>
+                    {% for m in ministries %}
+                    <option value="{{ m.id }}" {% if ministry_id == m.id %}selected{% endif %}>{{ m.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-medium">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All</option>
+                    {% for s in statuses %}
+                    <option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-medium">Occupation</label>
+                <input type="text" name="occupation" class="form-control" placeholder="e.g. Teacher" value="{{ occupation }}">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search me-1"></i> Search</button>
+                <a href="{{ url_for('member_search.search_members') }}" class="btn btn-outline-secondary btn-sm">Clear</a>
+                <span class="text-muted small ms-3">{{ members.total }} result(s)</span>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if members.items %}
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Gender</th><th>Ministry</th><th>Occupation</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+            {% for m in members.items %}
+            <tr>
+                <td><small class="text-muted">{{ m.member_id }}</small></td>
+                <td><a href="{{ url_for('members.view_member', id=m.id) }}" class="text-decoration-none fw-medium">{{ m.full_name() }}</a></td>
+                <td><small>{{ m.phone_number or '—' }}</small></td>
+                <td>{{ m.gender or '—' }}</td>
+                <td><small>{{ m.ministry.name if m.ministry else '—' }}</small></td>
+                <td><small>{{ m.profession or '—' }}</small></td>
+                <td><span class="badge bg-{{ 'success' if m.membership_status == 'Active' else 'secondary' }}">{{ m.membership_status }}</span></td>
+                <td><a href="{{ url_for('profile_ext.extended_profile', id=m.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-person-lines-fill"></i></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<nav><ul class="pagination pagination-sm justify-content-center">
+    {% for p in members.iter_pages(left_edge=1,right_edge=1,left_current=2,right_current=2) %}
+        {% if p %}<li class="page-item {{ 'active' if p==members.page }}"><a class="page-link" href="{{ url_for('member_search.search_members', page=p, q=q, gender=gender, ministry_id=ministry_id, status=status, occupation=occupation) }}">{{ p }}</a></li>
+        {% else %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}
+    {% endfor %}
+</ul></nav>
+{% else %}
+<div class="text-center py-5 text-muted"><i class="bi bi-search" style="font-size:3rem;"></i><p class="mt-3">No members found matching your criteria.</p></div>
+{% endif %}
+{% endblock %}

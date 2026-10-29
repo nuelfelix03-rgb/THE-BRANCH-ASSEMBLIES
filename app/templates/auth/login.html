@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Login - THE BRANCH ASSEMBLY{% endblock %}
+{% block auth_content %}
+<div class="login-page">
+    <div class="card login-card">
+        <div class="card-body">
+            <div class="login-logo">
+                {% if church_logo %}
+                <img src="{{ url_for('main.uploaded_file', filename='uploads/' + church_logo) }}" alt="{{ church_settings.church_name }}" class="rounded-circle" style="object-fit:cover;">
+                {% endif %}
+                <h3>THE BRANCH ASSEMBLY INT'L</h3>
+                <p class="text-muted">Sign in to your account</p>
+            </div>
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label class="form-label fw-medium">{{ form.username.label.text }}</label>
+                    {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), placeholder="Enter username") }}
+                    {% for error in form.username.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium">{{ form.password.label.text }}</label>
+                    {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="Enter password") }}
+                    {% for error in form.password.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                        {{ form.remember(class="form-check-input") }}
+                        <label class="form-check-label small">{{ form.remember.label.text }}</label>
+                    </div>
+                    <a href="{{ url_for('auth.forgot_password') }}" class="text-decoration-none small" style="color:var(--brand-orange);">Forgot Password?</a>
+                </div>
+                {{ form.submit(class="btn btn-primary w-100 py-2") }}
+            </form>
+            <div class="text-center mt-3">
+                <p class="mb-0 text-muted small">Don't have an account? <a href="{{ url_for('auth.register') }}" style="color:var(--brand-orange);">Register</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

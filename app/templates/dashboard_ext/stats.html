@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Stats{% endblock %}
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="bi bi-bar-chart me-2"></i>Dashboard Statistics</h4>
+<div class="row g-3">
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Total Members</div><div class="stat-value">{{ total_members }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Today's Attendance</div><div class="stat-value">{{ today_attendance }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Birthdays This Month</div><div class="stat-value">{{ birthdays_this_month }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">New Members (Month)</div><div class="stat-value">{{ new_members }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Upcoming Events</div><div class="stat-value">{{ upcoming_events }}</div></div></div>
+    <div class="col-md-4 col-6"><div class="card border-0 shadow-sm text-center p-4"><div class="stat-label">Ministries</div><div class="stat-value">{{ total_ministries }}</div></div></div>
+</div>
+{% endblock %}
