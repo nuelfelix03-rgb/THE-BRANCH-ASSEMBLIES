@@ -85,16 +85,22 @@ church_management_system/
 | MAIL_PORT | SMTP port | 587 |
 | MAIL_USE_TLS | Use TLS | True |
 
-### Production Database (Render / Neon)
+### Production Database (Neon / Render / any PostgreSQL)
 
-Set `DATABASE_URL` to your managed PostgreSQL connection string, e.g. for a Render
-PostgreSQL database:
+Set `DATABASE_URL` to your managed PostgreSQL connection string.
 
+**Neon (recommended — no Render PostgreSQL needed):**
 ```text
-# Render internal database URL (same region as the web service):
-DATABASE_URL=postgresql://user:password@dpg-xxxx-a:5432/church_db
+DATABASE_URL=postgresql://USER:DB_PASSWORD@ep-xxx.us-east-2.aws.neon.tech:5432/church_db?sslmode=require
+```
 
-# Render external database URL (different region / external access, needs SSL):
+**Render PostgreSQL** (internal — same region as web service):
+```text
+DATABASE_URL=postgresql://user:password@dpg-xxxx-a:5432/church_db
+```
+
+**Render PostgreSQL** (external — different region / external access, needs SSL):
+```text
 DATABASE_URL=postgresql://user:password@dpg-xxxx-a.oregon-postgres.render.com:5432/church_db?sslmode=require
 ```
 
