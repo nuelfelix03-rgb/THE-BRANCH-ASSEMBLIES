@@ -27,6 +27,22 @@ class Config:
                 1
             )
 
+        # Managed Postgres providers (Render external DB, Neon, Supabase, etc.)
+        # sit behind TLS. Append sslmode=require when connecting to a remote host
+        # that does not already specify connection parameters in the query string.
+        if (
+            DATABASE_URL.startswith("postgresql://")
+            and "@" in DATABASE_URL
+            and "?" not in DATABASE_URL
+        ):
+            host_part = DATABASE_URL.split("@", 1)[1].split("/", 1)[0]
+            hostname = host_part.split(":", 1)[0]
+            if (
+                hostname not in ("localhost", "127.0.0.1", "0.0.0.0")
+                and "." in hostname
+            ):
+                DATABASE_URL = DATABASE_URL + "?sslmode=require"
+
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
 
     else:

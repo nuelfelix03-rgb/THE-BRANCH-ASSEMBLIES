@@ -85,6 +85,19 @@ church_management_system/
 | MAIL_PORT | SMTP port | 587 |
 | MAIL_USE_TLS | Use TLS | True |
 
+### Production Database (Render / Neon)
+
+Set `DATABASE_URL` to your managed PostgreSQL connection string, e.g. for a Render
+PostgreSQL database:
+
+```text
+# Render internal database URL (same region as the web service):
+DATABASE_URL=postgresql://user:password@dpg-xxxx-a:5432/church_db
+
+# Render external database URL (different region / external access, needs SSL):
+DATABASE_URL=postgresql://user:password@dpg-xxxx-a.oregon-postgres.render.com:5432/church_db?sslmode=require
+```
+
 ## API Endpoints
 
 - `/events/api/events` - JSON endpoint for calendar events
