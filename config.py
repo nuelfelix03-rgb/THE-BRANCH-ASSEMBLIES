@@ -38,10 +38,10 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # -----------------------------
-    # Server
-    # -----------------------------
-    SERVER_NAME = os.environ.get("SERVER_NAME")
+    # NOTE: Do NOT set SERVER_NAME in production on platforms like Render.
+    # Flask's SERVER_NAME requires every request host to match exactly, which
+    # breaks routing when the platform's internal hostname differs (causes 404 on ALL routes).
+    # Use PREFERRED_URL_SCHEME for https:// links in emails instead.
     PREFERRED_URL_SCHEME = os.environ.get(
         "PREFERRED_URL_SCHEME",
         "https"
