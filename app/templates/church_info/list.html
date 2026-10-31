@@ -43,7 +43,7 @@
                     </span>
                     <small class="text-muted ms-2">Order: {{ info.display_order }}</small>
                 </p>
-                <p class="text-muted small mb-0">{{ info.content[:200] }}{% if info.content|length > 200 %}...{% endif %}</p>
+                <p class="text-muted small mb-0">{{ info.content | striptags | truncate(200, True) }}</p>
                 <small class="text-muted">By {{ info.author.username if info.author else 'Unknown' }} | Updated {{ info.updated_at.strftime('%b %d, %Y') }}</small>
             </div>
             <div class="text-end ms-3">

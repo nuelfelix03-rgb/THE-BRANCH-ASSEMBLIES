@@ -58,7 +58,7 @@
                     <span class="mx-1">•</span>
                     <i class="bi bi-calendar3 me-1"></i>{{ announcement.created_at.strftime('%b %d, %Y') }}
                 </div>
-                <p class="card-text flex-grow-1">{{ announcement.content[:150] }}{% if announcement.content|length > 150 %}...{% endif %}</p>
+                <p class="card-text flex-grow-1">{{ announcement.content | striptags | truncate(150, True) }}</p>
                 <div class="d-flex justify-content-between align-items-center mt-2">
                     <a href="{{ url_for('announcements.view_announcement', id=announcement.id) }}" class="btn btn-sm btn-outline-primary">Read More</a>
                     {% if current_user.role in ['super_admin', 'church_admin'] %}

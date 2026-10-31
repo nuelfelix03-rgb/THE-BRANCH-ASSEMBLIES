@@ -94,7 +94,7 @@
                                 <small class="text-muted">{{ announcement.created_at.strftime('%b %d') }}</small>
                             </div>
                             <a href="{{ url_for('announcements.view_announcement', id=announcement.id) }}" class="text-decoration-none fw-semibold" style="color:var(--text-main);">{{ announcement.title }}</a>
-                            <p class="mb-0 text-muted small text-truncate">{{ announcement.content[:120] }}</p>
+                            <p class="mb-0 text-muted small text-truncate">{{ announcement.content | striptags | truncate(120, True) }}</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -143,7 +143,7 @@
                         <small class="text-muted">{{ info.updated_at.strftime('%b %d, %Y') }}</small>
                     </div>
                     <h6 class="mb-1">{{ info.title }}</h6>
-                    <p class="mb-0 text-muted small">{{ info.content[:200] }}{% if info.content|length > 200 %}...{% endif %}</p>
+                    <p class="mb-0 text-muted small">{{ info.content | striptags | truncate(200, True) }}</p>
                 </div>
                 {% endfor %}
                 {% if church_info|length > 3 %}
