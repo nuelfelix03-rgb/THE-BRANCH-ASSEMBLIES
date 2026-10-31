@@ -95,6 +95,31 @@
         </div>
         {% endif %}
 
+        {% if profile_user.role == 'super_admin' %}
+        <div class="card mt-4">
+            <div class="card-header"><i class="bi bi-share"></i> Church Social Media</div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    {% if church_settings.social_instagram %}
+                    <a href="{{ church_settings.social_instagram if church_settings.social_instagram.startswith('http') else 'https://' + church_settings.social_instagram }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-danger"><i class="bi bi-instagram me-1"></i>Instagram</a>
+                    {% endif %}
+                    {% if church_settings.social_facebook %}
+                    <a href="{{ church_settings.social_facebook if church_settings.social_facebook.startswith('http') else 'https://' + church_settings.social_facebook }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary"><i class="bi bi-facebook me-1"></i>Facebook</a>
+                    {% endif %}
+                    {% if church_settings.social_tiktok %}
+                    <a href="{{ church_settings.social_tiktok if church_settings.social_tiktok.startswith('http') else 'https://' + church_settings.social_tiktok }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-dark"><i class="bi bi-tiktok me-1"></i>TikTok</a>
+                    {% endif %}
+                    {% if church_settings.social_youtube %}
+                    <a href="{{ church_settings.social_youtube if church_settings.social_youtube.startswith('http') else 'https://' + church_settings.social_youtube }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-danger"><i class="bi bi-youtube me-1"></i>YouTube</a>
+                    {% endif %}
+                    {% if church_settings.social_telegram %}
+                    <a href="{{ church_settings.social_telegram if church_settings.social_telegram.startswith('http') else 'https://' + church_settings.social_telegram }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-info"><i class="bi bi-telegram me-1"></i>Telegram</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         {% if member %}
         <div class="card mt-4">
             <div class="card-header"><i class="bi bi-person-vcard"></i> Member Info</div>
