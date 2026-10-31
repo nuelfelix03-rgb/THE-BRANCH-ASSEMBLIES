@@ -59,7 +59,8 @@ def add_info():
                     message=f'"{info.title}" has been published.',
                     notification_type='In-App',
                     recipient_id=user.id,
-                    sender_id=current_user.id
+                    sender_id=current_user.id,
+                    link=url_for('church_info.view_info')
                 ))
             db.session.commit()
 
@@ -91,7 +92,8 @@ def edit_info(id):
                     message=f'"{info.title}" has been published.',
                     notification_type='In-App',
                     recipient_id=user.id,
-                    sender_id=current_user.id
+                    sender_id=current_user.id,
+                    link=url_for('church_info.view_info')
                 ))
             db.session.commit()
 
@@ -127,7 +129,8 @@ def toggle_publish(id):
                 message=f'"{info.title}" has been published.',
                 notification_type='In-App',
                 recipient_id=user.id,
-                sender_id=current_user.id
+                sender_id=current_user.id,
+                link=url_for('church_info.view_info')
             ))
         db.session.commit()
 

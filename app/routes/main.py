@@ -3,7 +3,7 @@ import os, io
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_file, abort
 from flask_login import login_required, current_user
 from app import db
-from app.models import Member, Attendance, Ministry, Event, Announcement, User, ChurchInformation
+from app.models import Member, Attendance, Ministry, Event, Announcement, User, ChurchInformation, Notification
 from app.utils.decorators import admin_required
 from app.utils.helpers import generate_member_id, save_profile_picture, delete_file
 from sqlalchemy import func
@@ -121,7 +121,10 @@ def member_dashboard():
 @login_required
 def my_profile():
     member = Member.query.filter_by(email=current_user.email).first()
-    return render_template('profile.html', member=member)
+    notifications = Notification.query.filter_by(recipient_id=current_user.id) \
+        .order_by(Notification.created_at.desc()).limit(20).all()
+    unread_count = Notification.query.filter_by(recipient_id=current_user.id, is_read=False).count()
+    return render_template('profile.html', member=member, notifications=notifications, unread_count=unread_count)
 
 
 @main_bp.route('/register-profile', methods=['GET', 'POST'])

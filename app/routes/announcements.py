@@ -68,7 +68,8 @@ def add_announcement():
                     message=announcement.content[:200],
                     notification_type='In-App',
                     recipient_id=user.id,
-                    sender_id=current_user.id
+                    sender_id=current_user.id,
+                    link=url_for('announcements.view_announcement', id=announcement.id)
                 ))
             db.session.commit()
 
@@ -111,7 +112,8 @@ def edit_announcement(id):
                         message=announcement.content[:200],
                         notification_type='In-App',
                         recipient_id=user.id,
-                        sender_id=current_user.id
+                        sender_id=current_user.id,
+                        link=url_for('announcements.view_announcement', id=announcement.id)
                     ))
             db.session.commit()
 

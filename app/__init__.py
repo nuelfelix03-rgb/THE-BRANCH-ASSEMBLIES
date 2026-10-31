@@ -146,6 +146,10 @@ def create_app(config_class=Config):
                     }.items():
                         if col not in existing:
                             db.session.execute(sa_text(f'ALTER TABLE church_settings ADD COLUMN {col} {typ}'))
+                if 'notifications' in tables:
+                    existing = {c['name'] for c in inspector.get_columns('notifications')}
+                    if 'link' not in existing:
+                        db.session.execute(sa_text('ALTER TABLE notifications ADD COLUMN link VARCHAR(255)'))
                 db.session.commit()
             except Exception:
                 db.session.rollback()

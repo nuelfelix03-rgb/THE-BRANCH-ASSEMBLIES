@@ -229,6 +229,7 @@ class Notification(db.Model):
     recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     is_read = db.Column(db.Boolean, default=False)
+    link = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='notifications_received')

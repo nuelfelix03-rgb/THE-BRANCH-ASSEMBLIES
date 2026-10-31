@@ -154,8 +154,18 @@ def web_notifications():
         'message': n.message,
         'notification_type': n.notification_type,
         'is_read': n.is_read,
+        'link': n.link,
         'created_at': n.created_at.strftime('%b %d, %H:%M') if n.created_at else '',
     } for n in items]})
+
+
+@msg_bp.route('/notifications/read-all', methods=['POST'])
+@login_required
+def mark_all_read():
+    Notification.query.filter_by(recipient_id=current_user.id, is_read=False).update({'is_read': True})
+    db.session.commit()
+    flash('All notifications marked as read.', 'success')
+    return redirect(request.referrer or url_for('main.my_profile'))
 
 
 @msg_bp.route('/notifications/unread-count')
