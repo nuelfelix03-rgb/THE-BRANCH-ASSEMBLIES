@@ -100,41 +100,57 @@ def create_app(config_class=Config):
             "church_logo": admin.profile_picture if admin and admin.profile_picture else None,
         }
 
-    # Create tables if they don't exist
-    with app.app_context():
-        from app import models
-        from app.models_ext import FamilyMember, MemberSkill, MemberDocument, BaptismRecord, QRCodeAttendance, ServiceSchedule, UploadedImage
-        db.create_all()
+    # Create tables if they don't exist (with retry for transient DB failures, e.g. Neon cold start)
+    import time as _time
 
-        # Migrate existing tables with new columns (SQLite doesn't auto-alter)
-        from sqlalchemy import inspect, text as sa_text
+    def _ensure_schema():
+        with app.app_context():
+            from app import models
+            from app.models_ext import FamilyMember, MemberSkill, MemberDocument, BaptismRecord, QRCodeAttendance, ServiceSchedule, UploadedImage
+            db.create_all()
+
+            # Migrate existing tables with new columns (SQLite doesn't auto-alter)
+            from sqlalchemy import inspect, text as sa_text
+            try:
+                inspector = inspect(db.engine)
+                tables = inspector.get_table_names()
+                member_cols = {
+                    'profession': 'VARCHAR(200)', 'is_student': 'VARCHAR(10)',
+                    'school': 'VARCHAR(200)', 'faculty': 'VARCHAR(200)',
+                    'department': 'VARCHAR(200)', 'level': 'VARCHAR(50)',
+                    'accommodation': 'VARCHAR(50)', 'hostel_name': 'VARCHAR(200)',
+                    'room_number': 'VARCHAR(50)', 'previous_church': 'VARCHAR(200)',
+                    'how_heard': 'VARCHAR(100)', 'friend_name': 'VARCHAR(100)',
+                    'other_source': 'VARCHAR(200)', 'preferred_social_platform': 'VARCHAR(100)',
+                    'social_handle': 'VARCHAR(100)',
+                }
+                if 'members' in tables:
+                    existing = {c['name'] for c in inspector.get_columns('members')}
+                    for col, typ in member_cols.items():
+                        if col not in existing:
+                            db.session.execute(sa_text(f'ALTER TABLE members ADD COLUMN {col} {typ}'))
+                if 'announcements' in tables:
+                    existing = {c['name'] for c in inspector.get_columns('announcements')}
+                    if 'image' not in existing:
+                        db.session.execute(sa_text('ALTER TABLE announcements ADD COLUMN image VARCHAR(255)'))
+                    if 'author_name' not in existing:
+                        db.session.execute(sa_text('ALTER TABLE announcements ADD COLUMN author_name VARCHAR(100)'))
+                    if 'author_id' not in existing:
+                        db.session.execute(sa_text('ALTER TABLE announcements ADD COLUMN author_id INTEGER'))
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+
+    _last_db_exc = None
+    for _attempt in range(5):
         try:
-            inspector = inspect(db.engine)
-            tables = inspector.get_table_names()
-            member_cols = {
-                'profession': 'VARCHAR(200)', 'is_student': 'VARCHAR(10)',
-                'school': 'VARCHAR(200)', 'faculty': 'VARCHAR(200)',
-                'department': 'VARCHAR(200)', 'level': 'VARCHAR(50)',
-                'accommodation': 'VARCHAR(50)', 'hostel_name': 'VARCHAR(200)',
-                'room_number': 'VARCHAR(50)', 'previous_church': 'VARCHAR(200)',
-                'how_heard': 'VARCHAR(100)', 'friend_name': 'VARCHAR(100)',
-                'other_source': 'VARCHAR(200)', 'preferred_social_platform': 'VARCHAR(100)',
-                'social_handle': 'VARCHAR(100)',
-            }
-            if 'members' in tables:
-                existing = {c['name'] for c in inspector.get_columns('members')}
-                for col, typ in member_cols.items():
-                    if col not in existing:
-                        db.session.execute(sa_text(f'ALTER TABLE members ADD COLUMN {col} {typ}'))
-            if 'announcements' in tables:
-                existing = {c['name'] for c in inspector.get_columns('announcements')}
-                if 'image' not in existing:
-                    db.session.execute(sa_text('ALTER TABLE announcements ADD COLUMN image VARCHAR(255)'))
-                if 'author_name' not in existing:
-                    db.session.execute(sa_text('ALTER TABLE announcements ADD COLUMN author_name VARCHAR(100)'))
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
+            _ensure_schema()
+            break
+        except Exception as _e:
+            _last_db_exc = _e
+            _time.sleep(2 * (_attempt + 1))
+    if _last_db_exc is not None:
+        raise _last_db_exc
 
     # Daily birthday-wish job (a): run via cron / task scheduler once per day.
     #   flask birthday-wishes           -> send emails + notify admins
