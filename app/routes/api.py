@@ -4,6 +4,7 @@ from functools import wraps
 from flask import Blueprint, jsonify, request
 from app import db
 from app.models import User, Member, Attendance, Ministry, Event, Announcement, Notification, ChurchInformation, ChurchSettings, PasswordResetToken
+from app.utils.helpers import month_expr
 from sqlalchemy import func, case
 
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
@@ -321,12 +322,12 @@ def api_attendance_stats(user):
         Attendance.date >= week_start
     ).group_by(Attendance.service_type).all()
     monthly_data = db.session.query(
-        func.strftime('%Y-%m', Attendance.date).label('month'),
+        month_expr(Attendance.date).label('month'),
         func.count(Attendance.id).label('total'),
         func.sum(case((Attendance.status == 'Present', 1), else_=0)).label('present')
     ).filter(
         Attendance.date >= first_of_month
-    ).group_by(func.strftime('%Y-%m', Attendance.date)).all()
+    ).group_by(month_expr(Attendance.date)).all()
     return jsonify({
         'weekly': [{'service_type': w.service_type, 'total': w.total, 'present': w.present} for w in weekly_data],
         'monthly': [{'month': m.month, 'total': m.total, 'present': m.present} for m in monthly_data],

@@ -5,6 +5,14 @@ from datetime import date, timedelta, datetime
 from PIL import Image
 from flask import current_app
 from app import db
+from sqlalchemy import func
+
+
+def month_expr(column):
+    """Return a dialect-aware SQL expression rendering a date column as 'YYYY-MM'."""
+    if db.engine.dialect.name == 'sqlite':
+        return func.strftime('%Y-%m', column)
+    return func.to_char(column, 'YYYY-MM')
 
 
 def save_profile_picture(form_picture):

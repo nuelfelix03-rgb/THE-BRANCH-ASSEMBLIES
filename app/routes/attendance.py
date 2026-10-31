@@ -5,6 +5,7 @@ from app import db
 from app.models import Member, Attendance
 from app.forms import AttendanceForm
 from app.utils.decorators import admin_required
+from app.utils.helpers import month_expr
 from sqlalchemy import func, case
 
 attendance_bp = Blueprint('attendance', __name__, url_prefix='/attendance')
@@ -139,17 +140,12 @@ def attendance_stats():
         Attendance.date >= (today - timedelta(days=7))
     ).group_by(Attendance.service_type).all()
 
-    if db.engine.dialect.name == 'sqlite':
-        month_expr = func.strftime('%Y-%m', Attendance.date)
-    else:
-        month_expr = func.date_format(Attendance.date, '%Y-%m')
-
     monthly_data = db.session.query(
-        month_expr.label('month'),
+        month_expr(Attendance.date).label('month'),
         func.count(Attendance.id).label('total'),
         func.sum(case((Attendance.status == 'Present', 1), else_=0)).label('present')
     ).filter(
         Attendance.date >= today.replace(day=1)
-    ).group_by(month_expr).all()
+    ).group_by(month_expr(Attendance.date)).all()
 
     return render_template('attendance/stats.html', weekly_data=weekly_data, monthly_data=monthly_data)

@@ -6,6 +6,7 @@ from flask_login import login_required
 from app import db
 from app.models import Member, Attendance, Ministry, Event
 from app.utils.decorators import admin_required
+from app.utils.helpers import month_expr
 from sqlalchemy import func, case
 
 try:
@@ -68,7 +69,7 @@ def members_report():
     total_members = Member.query.count()
     active_members = Member.query.filter_by(membership_status='Active').count()
     new_this_month = Member.query.filter(
-        func.strftime('%Y-%m', Member.date_joined) == date.today().strftime('%Y-%m')
+        month_expr(Member.date_joined) == date.today().strftime('%Y-%m')
     ).count()
     by_ministry = db.session.query(
         Ministry.name, func.count(Member.id)
