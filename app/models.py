@@ -287,7 +287,7 @@ class ChurchSettings(db.Model):
     __tablename__ = 'church_settings'
 
     id = db.Column(db.Integer, primary_key=True)
-    church_name = db.Column(db.String(200), default='My Church')
+    church_name = db.Column(db.String(200), default="THE BRANCH ASSEMBLIES INT'L")
     church_address = db.Column(db.Text)
     church_phone = db.Column(db.String(20))
     church_email = db.Column(db.String(120))

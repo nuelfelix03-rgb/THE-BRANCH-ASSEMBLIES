@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Login - THE BRANCH ASSEMBLY{% endblock %}
+{% block title %}Login - THE BRANCH ASSEMBLIES INT'L{% endblock %}
 {% block auth_content %}
 <div class="login-page">
     <div class="card login-card">
@@ -8,7 +8,7 @@
                 {% if church_logo %}
                 <img src="{{ url_for('main.uploaded_file', filename='uploads/' + church_logo) }}" alt="{{ church_settings.church_name }}" class="rounded-circle" style="object-fit:cover;">
                 {% endif %}
-                <h3>THE BRANCH ASSEMBLY INT'L</h3>
+                <h3>THE BRANCH ASSEMBLIES INT'L</h3>
                 <p class="text-muted">Sign in to your account</p>
             </div>
             <form method="POST" action="">

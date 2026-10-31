@@ -24,7 +24,7 @@ def seed_data():
 
     if ChurchSettings.query.first() is None:
         settings = ChurchSettings(
-            church_name='My Church',
+            church_name="THE BRANCH ASSEMBLIES INT'L",
             church_address='',
             church_phone='',
             church_email='',

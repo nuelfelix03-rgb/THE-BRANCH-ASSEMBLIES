@@ -1,7 +1,7 @@
 {
-  "name": "THE BRANCH ASSEMBLY",
-  "short_name": "Branch",
-  "description": "THE BRANCH ASSEMBLY - Manage members, attendance, events & announcements",
+  "name": "THE BRANCH ASSEMBLIES INT'L",
+  "short_name": "THE BRANCH ASSEMBLIES INT'L",
+  "description": "THE BRANCH ASSEMBLIES INT'L - Manage members, attendance, events & announcements",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",

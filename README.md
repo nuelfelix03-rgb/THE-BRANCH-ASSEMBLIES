@@ -1,6 +1,6 @@
-# THE BRANCH ASSEMBLY
+# THE BRANCH ASSEMBLIES INT'L
 
-A modern, production-ready THE BRANCH ASSEMBLY web application built with Flask. Manage members, attendance, ministries, announcements, events, and generate reports.
+A modern, production-ready THE BRANCH ASSEMBLIES INT'L web application built with Flask. Manage members, attendance, ministries, announcements, events, and generate reports.
 
 ## Features
 

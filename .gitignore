@@ -32,3 +32,5 @@ Thumbs.db
 # Deployment
 *.pid
 *.log
+.neon
+node_modules/
