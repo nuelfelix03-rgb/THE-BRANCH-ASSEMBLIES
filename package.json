@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@neon/config": "^1.9.6",
+    "@neon/env": "^1.6.6"
+  },
+  "scripts": {
+    "build": "echo \"No JavaScript build step required for this Flask app\""
+  }
+}
