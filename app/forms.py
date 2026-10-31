@@ -220,6 +220,11 @@ class ChurchSettingsForm(FlaskForm):
     church_email = StringField('Email', validators=[Optional(), Email()])
     service_times = TextAreaField('Service Times', validators=[Optional()])
     welcome_message = TextAreaField('Welcome Message', validators=[Optional()])
+    social_instagram = StringField('Instagram URL / Handle', validators=[Optional(), Length(max=255)])
+    social_facebook = StringField('Facebook URL / Page', validators=[Optional(), Length(max=255)])
+    social_tiktok = StringField('TikTok URL / Handle', validators=[Optional(), Length(max=255)])
+    social_youtube = StringField('YouTube URL / Handle', validators=[Optional(), Length(max=255)])
+    social_telegram = StringField('Telegram URL / Handle', validators=[Optional(), Length(max=255)])
     submit = SubmitField('Save Settings')
 
 

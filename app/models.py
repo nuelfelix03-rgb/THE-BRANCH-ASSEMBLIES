@@ -293,6 +293,11 @@ class ChurchSettings(db.Model):
     church_email = db.Column(db.String(120))
     service_times = db.Column(db.Text)
     welcome_message = db.Column(db.Text)
+    social_instagram = db.Column(db.String(255))
+    social_facebook = db.Column(db.String(255))
+    social_tiktok = db.Column(db.String(255))
+    social_youtube = db.Column(db.String(255))
+    social_telegram = db.Column(db.String(255))
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     @classmethod

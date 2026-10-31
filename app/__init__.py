@@ -137,6 +137,15 @@ def create_app(config_class=Config):
                         db.session.execute(sa_text('ALTER TABLE announcements ADD COLUMN author_name VARCHAR(100)'))
                     if 'author_id' not in existing:
                         db.session.execute(sa_text('ALTER TABLE announcements ADD COLUMN author_id INTEGER'))
+                if 'church_settings' in tables:
+                    existing = {c['name'] for c in inspector.get_columns('church_settings')}
+                    for col, typ in {
+                        'social_instagram': 'VARCHAR(255)', 'social_facebook': 'VARCHAR(255)',
+                        'social_tiktok': 'VARCHAR(255)', 'social_youtube': 'VARCHAR(255)',
+                        'social_telegram': 'VARCHAR(255)',
+                    }.items():
+                        if col not in existing:
+                            db.session.execute(sa_text(f'ALTER TABLE church_settings ADD COLUMN {col} {typ}'))
                 db.session.commit()
             except Exception:
                 db.session.rollback()

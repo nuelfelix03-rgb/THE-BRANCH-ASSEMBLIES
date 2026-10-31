@@ -34,11 +34,55 @@
                     {{ form.welcome_message.label(class="form-label") }}
                     {{ form.welcome_message(class="form-control", rows=3) }}
                 </div>
+                <div class="col-md-6">
+                    {{ form.social_instagram.label(class="form-label") }}
+                    {{ form.social_instagram(class="form-control", placeholder="https://instagram.com/yourhandle") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.social_facebook.label(class="form-label") }}
+                    {{ form.social_facebook(class="form-control", placeholder="https://facebook.com/yourpage") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.social_tiktok.label(class="form-label") }}
+                    {{ form.social_tiktok(class="form-control", placeholder="https://tiktok.com/@yourhandle") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.social_youtube.label(class="form-label") }}
+                    {{ form.social_youtube(class="form-control", placeholder="https://youtube.com/@yourhandle") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.social_telegram.label(class="form-label") }}
+                    {{ form.social_telegram(class="form-control", placeholder="https://t.me/yourchannel") }}
+                </div>
             </div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                 {{ form.submit(class="btn btn-primary") }}
             </div>
         </form>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3"><i class="bi bi-share me-2" style="color:var(--fire);"></i>Church Social Media</h5>
+        <p class="text-muted small mb-3">Clickable links to the church's social channels — powered by Church Settings.</p>
+        <div class="d-flex flex-wrap gap-2">
+            {% if settings.social_instagram %}
+            <a href="{{ settings.social_instagram if settings.social_instagram.startswith('http') else 'https://' + settings.social_instagram }}" target="_blank" rel="noopener" class="btn btn-outline-danger btn-sm"><i class="bi bi-instagram me-1"></i>Instagram</a>
+            {% endif %}
+            {% if settings.social_facebook %}
+            <a href="{{ settings.social_facebook if settings.social_facebook.startswith('http') else 'https://' + settings.social_facebook }}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm"><i class="bi bi-facebook me-1"></i>Facebook</a>
+            {% endif %}
+            {% if settings.social_tiktok %}
+            <a href="{{ settings.social_tiktok if settings.social_tiktok.startswith('http') else 'https://' + settings.social_tiktok }}" target="_blank" rel="noopener" class="btn btn-outline-success btn-sm"><i class="bi bi-tiktok me-1"></i>TikTok</a>
+            {% endif %}
+            {% if settings.social_youtube %}
+            <a href="{{ settings.social_youtube if settings.social_youtube.startswith('http') else 'https://' + settings.social_youtube }}" target="_blank" rel="noopener" class="btn btn-outline-danger btn-sm"><i class="bi bi-youtube me-1"></i>YouTube</a>
+            {% endif %}
+            {% if settings.social_telegram %}
+            <a href="{{ settings.social_telegram if settings.social_telegram.startswith('http') else 'https://' + settings.social_telegram }}" target="_blank" rel="noopener" class="btn btn-outline-info btn-sm"><i class="bi bi-telegram me-1"></i>Telegram</a>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -21,6 +21,11 @@ def index():
         church_settings.church_email = form.church_email.data
         church_settings.service_times = form.service_times.data
         church_settings.welcome_message = form.welcome_message.data
+        church_settings.social_instagram = form.social_instagram.data
+        church_settings.social_facebook = form.social_facebook.data
+        church_settings.social_tiktok = form.social_tiktok.data
+        church_settings.social_youtube = form.social_youtube.data
+        church_settings.social_telegram = form.social_telegram.data
         db.session.commit()
         flash('Church settings saved!', 'success')
         return redirect(url_for('settings.index'))
