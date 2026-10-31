@@ -35,6 +35,9 @@
             pointer-events: none;
         }
         .hero-canvas-wrap canvas { width: 100%; height: 100%; display: block; }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-canvas-wrap { display: none; }
+        }
         .hero::before {
             content: '';
             position: absolute;
@@ -170,6 +173,7 @@
         (function () {
             const canvas = document.getElementById('hero-webgl');
             if (!canvas || !window.THREE) return;
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
             renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
             const scene = new THREE.Scene();
@@ -204,6 +208,7 @@
             window.addEventListener('resize', resize);
             const pos = geo.attributes.position;
             function animate() {
+                if (document.hidden) return;
                 requestAnimationFrame(animate);
                 const arr = pos.array;
                 for (let i = 0; i < COUNT; i++) {
